@@ -12,7 +12,7 @@ private:
     unsigned long size;
     vector<double> values;
 public:
-    Vector(vector<double> values);
+    explicit Vector(vector<double> values);
     Vector(unsigned long size, double x);
     Vector(unsigned long size, int index, double x);
     Vector(double* values, unsigned long size);
@@ -35,6 +35,7 @@ public:
     Vector product(double value);
     void l1Normalize();
     double l2Norm();
+    unsigned long getSize();
     double cosineSimilarity(Vector v);
     double getValue(unsigned long index);
     void setValue(unsigned long index, double value);

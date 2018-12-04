@@ -371,3 +371,12 @@ void Vector::setValue(unsigned long index, double value) {
 void Vector::addValue(unsigned long index, double value) {
     values[index] += value;
 }
+
+/**
+ * The size method returns the size of the values {@link vector}.
+ *
+ * @return size of the values {@link vector}.
+ */
+unsigned long Vector::getSize() {
+    return size;
+}
