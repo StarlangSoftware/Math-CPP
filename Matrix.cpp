@@ -680,6 +680,8 @@ void Matrix::rotate(double s, double tau, int i, int j, int k, int l) {
     values[k * col + l] = h + s * (g - h * tau);
 }
 
+bool comparator(Eigenvector i,Eigenvector j) { return (i.getEigenValue() < j.getEigenValue()); }
+
 /**
  * The characteristics method finds and returns a sorted {@link vector} of {@link Eigenvector}s. And it throws
  * {@link MatrixNotSymmetric} exception if it is not symmetric.
@@ -775,6 +777,7 @@ vector<Eigenvector> Matrix::characteristics() {
             result.emplace_back(d[i], v.getColumn(i));
         }
     }
+    sort(result.begin(), result.end(), comparator);
     delete[] d;
     delete[] b;
     delete[] z;
