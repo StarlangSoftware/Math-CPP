@@ -21,7 +21,7 @@ DiscreteDistribution::DiscreteDistribution() : map() {
  */
 void DiscreteDistribution::addItem(string item) {
     if (containsItem(item)) {
-        emplace(item, find(item)->second + 1);
+        insert_or_assign(item, find(item)->second + 1);
     } else {
         emplace(item, 1);
     }
@@ -36,7 +36,7 @@ void DiscreteDistribution::addItem(string item) {
  */
 void DiscreteDistribution::removeItem(string item) {
     if (containsItem(item)) {
-        emplace(item, find(item)->second - 1);
+        insert_or_assign(item, find(item)->second - 1);
         if (find(item)->second == 0) {
             erase(item);
         }
@@ -53,7 +53,7 @@ void DiscreteDistribution::removeItem(string item) {
 void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
     for (auto it = begin(); it != end(); it++) {
         if (containsItem(it->first)) {
-            emplace(it->first, it->second + find(it->first)->second);
+            insert_or_assign(it->first, it->second + find(it->first)->second);
         } else {
             emplace(it->first, it->second);
         }
@@ -71,7 +71,7 @@ void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
 void DiscreteDistribution::removeDistribution(DiscreteDistribution distribution) {
     for (auto it = begin(); it != end(); it++) {
         if (find(it->first)->second - it->second != 0) {
-            emplace(it->first, it->second - find(it->first)->second);
+            insert_or_assign(it->first, it->second - find(it->first)->second);
         } else {
             erase(it->first);
         }
