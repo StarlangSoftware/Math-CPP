@@ -24,13 +24,16 @@ using namespace std;
  * @param filename is used to read file.
  */
 Matrix::Matrix(string fileName) {
+    double value;
     ifstream inputStream(fileName, ios::in);
     inputStream >> row;
     inputStream >> col;
-    values = new double[row * col];
+    values.reserve(row);
     for (int i = 0; i < row; i++) {
+        values[i] = Vector(col, 0.0);
         for (int j = 0; j < col; j++) {
-            inputStream >> values[i * col + j];
+            inputStream >> value;
+            values[i].setValue(j, value);
         }
     }
     inputStream.close();
@@ -44,7 +47,9 @@ Matrix::Matrix(string fileName) {
  * @param col is used to create matrix.
  */
 Matrix::Matrix(int row, int col) {
-    values = new double[row * col];
+    for (int i = 0; i < row; i++){
+        values.emplace_back(Vector(col, 0.0));
+    }
     this->row = row;
     this->col = col;
 }
@@ -60,7 +65,9 @@ Matrix::Matrix(int row, int col) {
  * @param max maximum value.
  */
 Matrix::Matrix(int row, int col, double min, double max) {
-    values = new double[row * col];
+    for (int i = 0; i < row; i++){
+        values.emplace_back(Vector(col, 0.0));
+    }
     this->row = row;
     this->col = col;
     random_device rd;
@@ -68,7 +75,7 @@ Matrix::Matrix(int row, int col, double min, double max) {
     uniform_real_distribution <> distribution (min, max);
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
-            values[i * col + j] = distribution(gen);
+            values[i].setValue(j, distribution(gen));
         }
     }
 }
@@ -81,11 +88,13 @@ Matrix::Matrix(int row, int col, double min, double max) {
  */
 Matrix::Matrix(int size) {
     int i;
-    values = new double[size * size];
+    for (int i = 0; i < row; i++){
+        values.emplace_back(Vector(col, 0.0));
+    }
     row = size;
     col = size;
     for (i = 0; i < size; i++) {
-        values[i * col + i] = 1;
+        values[i].setValue(i, 1);
     }
 }
 
@@ -97,9 +106,9 @@ Matrix::Matrix(int size) {
 void Matrix::printToFile(string fileName) {
     ofstream outputStream(fileName, ios::out);
     for (int i = 0; i < row; i++) {
-        outputStream << values[i * col];
+        outputStream << values[i].getValue(0);
         for (int j = 1; j < col; j++) {
-            outputStream << values[i * col + j];
+            outputStream << values[i].getValue(j);
         }
         outputStream << "\n";
     }
@@ -114,7 +123,7 @@ void Matrix::printToFile(string fileName) {
  * @return item at given index of values {@link array}.
  */
 double Matrix::getValue(int rowNo, int colNo) {
-    return values[rowNo * col + colNo];
+    return values[rowNo].getValue(colNo);
 }
 
 /**
@@ -125,7 +134,7 @@ double Matrix::getValue(int rowNo, int colNo) {
  * @param value is used to set at given index.
  */
 void Matrix::setValue(int rowNo, int colNo, double value) {
-    values[rowNo * col + colNo] = value;
+    values[rowNo].setValue(colNo, value);
 }
 
 /**
@@ -136,7 +145,7 @@ void Matrix::setValue(int rowNo, int colNo, double value) {
  * @param value is used to add to given item at given index.
  */
 void Matrix::addValue(int rowNo, int colNo, double value) {
-    values[rowNo * col + colNo] += value;
+    values[rowNo].addValue(colNo, value);
 }
 
 /**
@@ -146,7 +155,7 @@ void Matrix::addValue(int rowNo, int colNo, double value) {
  * @param colNo integer input for column number.
  */
 void Matrix::increment(int rowNo, int colNo) {
-    values[rowNo * col + colNo]++;
+    values[rowNo].addValue(colNo, 1);
 }
 
 /**
@@ -165,7 +174,7 @@ int Matrix::getRow() {
  * @return Vector of values {@link array} at given row input.
  */
 Vector Matrix::getRow(int row) {
-    return Vector(&values[row * col], (unsigned long) col);
+    return values[row];
 }
 
 /**
@@ -178,7 +187,7 @@ Vector Matrix::getRow(int row) {
 vector<double> Matrix::getColumn(int column) {
     vector<double> vector((unsigned long) row);
     for (int i = 0; i < row; i++) {
-        vector.push_back(values[i * col + column]);
+        vector.push_back(values[i].getValue(column));
     }
     return vector;
 }
@@ -199,10 +208,10 @@ void Matrix::columnWiseNormalize() {
     for (int i = 0; i < row; i++) {
         double sum = 0.0;
         for (int j = 0; j < col; j++) {
-            sum += values[i * col + j];
+            sum += values[i].getValue(j);
         }
         for (int j = 0; j < col; j++) {
-            values[i * col + j] /= sum;
+            values[i].setValue(j, values[i].getValue(j) / sum);
         }
     }
 }
@@ -216,9 +225,7 @@ void Matrix::columnWiseNormalize() {
 void Matrix::multiplyWithConstant(double constant) {
     int i, j;
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            values[i * col + j] *= constant;
-        }
+        values[i].multiply(constant);
     }
 }
 
@@ -231,9 +238,7 @@ void Matrix::multiplyWithConstant(double constant) {
 void Matrix::divideByConstant(double constant) {
     int i, j;
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            values[i * col + j] /= constant;
-        }
+        values[i].divide(constant);
     }
 }
 
@@ -250,9 +255,7 @@ void Matrix::add(Matrix m) {
         throw MatrixDimensionMismatch();
     }
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            values[i * col + j] += m.values[i * col + j];
-        }
+        values[i].add(m.values[i]);
     }
 }
 
@@ -268,9 +271,7 @@ void Matrix::add(int rowNo, Vector v) {
     if (col != v.getSize()) {
         throw MatrixColumnMismatch();
     }
-    for (unsigned long i = 0; i < col; i++) {
-        values[rowNo * col + i] += v.getValue(i);
-    }
+    values[rowNo].add(v);
 }
 
 /**
@@ -286,9 +287,7 @@ void Matrix::subtract(Matrix m) {
         throw MatrixDimensionMismatch();
     }
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            values[i * col + j] -= m.values[i * col + j];
-        }
+        values[i].subtract(m.values[i]);
     }
 }
 
@@ -309,7 +308,7 @@ Vector Matrix::multiplyWithVectorFromLeft(Vector v) {
     for (int i = 0; i < col; i++) {
         result[i] = 0.0;
         for (unsigned long j = 0; j < row; j++) {
-            result[i] += v.getValue(j) * values[j * col + i];
+            result[i] += v.getValue(j) * values[j].getValue(i);
         }
     }
     return Vector(result);
@@ -330,10 +329,7 @@ Vector Matrix::multiplyWithVectorFromRight(Vector v) {
     }
     vector<double> result((unsigned long) row);
     for (int i = 0; i < row; i++) {
-        result[i] = 0.0;
-        for (unsigned long j = 0; j < col; j++) {
-            result[i] += v.getValue(j) * values[i * col + j];
-        }
+        result[i] = values[i].dotProduct(v);
     }
     return Vector(result);
 }
@@ -348,7 +344,7 @@ Vector Matrix::multiplyWithVectorFromRight(Vector v) {
 double Matrix::columnSum(int columnNo) {
     double sum = 0;
     for (int i = 0; i < row; i++) {
-        sum += values[i * col + columnNo];
+        sum += values[i].getValue(columnNo);
     }
     return sum;
 }
@@ -375,11 +371,7 @@ Vector Matrix::sumOfRows() {
  * @return summation of given row of values {@link array}.
  */
 double Matrix::rowSum(int rowNo) {
-    double sum = 0;
-    for (int i = 0; i < col; i++) {
-        sum += values[rowNo * col + i];
-    }
-    return sum;
+    return values[rowNo].sum();
 }
 
 /**
@@ -402,9 +394,9 @@ Matrix Matrix::multiply(Matrix m) {
         for (j = 0; j < m.col; j++) {
             sum = 0.0;
             for (k = 0; k < col; k++) {
-                sum += values[i * col + k] * m.values[k * m.col + j];
+                sum += values[i].getValue(k) * m.values[k].getValue(j);
             }
-            result.values[i * m.col + j] = sum;
+            result.values[i].setValue(j, sum);
         }
     }
     return result;
@@ -425,9 +417,7 @@ Matrix Matrix::elementProduct(Matrix m) {
     }
     Matrix result(row, m.col);
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            result.values[i * col + j] = values[i * col + j] * m.values[i * col + j];
-        }
+        result.values[i] = values[i].elementProduct(m.values[i]);
     }
     return result;
 }
@@ -439,12 +429,10 @@ Matrix Matrix::elementProduct(Matrix m) {
  * @return sum of the items of values {@link array}.
  */
 double Matrix::sumOfElements() {
-    int i, j;
+    int i;
     double sum = 0.0;
     for (i = 0; i < row; i++) {
-        for (j = 0; j < col; j++) {
-            sum += values[i * col + j];
-        }
+        sum += values[i].sum();
     }
     return sum;
 }
@@ -461,7 +449,7 @@ double Matrix::trace() {
     }
     double sum = 0.0;
     for (i = 0; i < row; i++) {
-        sum += values[i * col + i];
+        sum += values[i].getValue(i);
     }
     return sum;
 }
@@ -477,7 +465,7 @@ Matrix Matrix::transpose() {
     Matrix result(col, row);
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
-            result.values[j * row + i] = values[i * col + j];
+            result.values[j].setValue(i, values[i].getValue(j));
         }
     }
     return result;
@@ -499,7 +487,7 @@ Matrix Matrix::partial(int rowstart, int rowend, int colstart, int colend) {
     Matrix result(rowend - rowstart + 1, colend - colstart + 1);
     for (i = rowstart; i <= rowend; i++)
         for (j = colstart; j <= colend; j++)
-            result.values[(i - rowstart) * (colend - colstart + 1) + j - colstart] = values[i * col + j];
+            result.values[i - rowstart].setValue(j - colstart, values[i].getValue(j));
     return result;
 }
 
@@ -515,7 +503,7 @@ bool Matrix::isSymmetric() {
     }
     for (int i = 0; i < row - 1; i++) {
         for (int j = i + 1; j < row; j++) {
-            if (values[i * col + j] != values[j * col + i]) {
+            if (values[i].getValue(j) != values[j].getValue(i)) {
                 return false;
             }
         }
@@ -536,21 +524,17 @@ double Matrix::determinant() {
     }
     int i, j, k;
     double ratio, det = 1.0;
-    double* copy = new double[row * col];
-    for (i = 0; i < row; i++)
-        for (j = 0; j < col; j++)
-            copy[i * col + j] = values[i * col + j];
+    Matrix copy = clone();
     for (i = 0; i < row; i++) {
-        det *= copy[i * col + i];
+        det *= copy.values[i].getValue(i);
         if (det == 0.0)
             break;
         for (j = i + 1; j < row; j++) {
-            ratio = copy[j * col + i] / copy[i * col + i];
+            ratio = copy.values[j].getValue(i) / copy.values[i].getValue(i);
             for (k = i; k < col; k++)
-                copy[j * col + k] = copy[j * col + k] - copy[i * col + k] * ratio;
+                copy.values[j].setValue(k, copy.values[j].getValue(k) - copy.values[i].getValue(k) * ratio);
         }
     }
-    delete[] copy;
     return det;
 }
 
@@ -579,8 +563,8 @@ void Matrix::inverse() {
             if (ipiv[j - 1] != 1)
                 for (k = 1; k <= row; k++)
                     if (ipiv[k - 1] == 0)
-                        if (abs(values[(j - 1) * col + k - 1]) >= big) {
-                            big = abs(values[(j - 1) * col + k - 1]);
+                        if (abs(values[j - 1].getValue(k - 1)) >= big) {
+                            big = abs(values[j - 1].getValue(k - 1));
                             irow = j;
                             icol = k;
                         }
@@ -588,43 +572,35 @@ void Matrix::inverse() {
             throw DeterminantZero();
         ipiv[icol - 1] = ipiv[icol - 1] + 1;
         if (irow != icol) {
-            for (l = 1; l <= row; l++) {
-                dum = values[(irow - 1) * col + l - 1];
-                values[(irow - 1) * col + l - 1] = values[(icol - 1) * col + l - 1];
-                values[(icol - 1) * col + l - 1] = dum;
-            }
-            for (l = 1; l <= row; l++) {
-                dum = b.values[(irow - 1) * col + l - 1];
-                b.values[(irow - 1) * col + l - 1] = b.values[(icol - 1) * col + l - 1];
-                b.values[(icol - 1) * col + l - 1] = dum;
-            }
+            Vector dummyVector = values[irow - 1];
+            values[irow - 1] = values[icol - 1];
+            values[icol - 1] = dummyVector;
+            dummyVector = b.values[irow - 1];
+            b.values[irow - 1] = b.values[icol - 1];
+            b.values[icol - 1] = dummyVector;
         }
         indxr[i - 1] = irow;
         indxc[i - 1] = icol;
-        if (values[(icol - 1) * col + icol - 1] == 0)
+        if (values[icol - 1].getValue(icol - 1) == 0)
             throw DeterminantZero();
-        pivinv = (1.0) / (values[(icol - 1) * col + icol - 1]);
-        values[(icol - 1) * col + icol - 1] = 1.0;
-        for (l = 1; l <= row; l++)
-            values[(icol - 1) * col + l - 1] = values[(icol - 1) * col + l - 1] * pivinv;
-        for (l = 1; l <= row; l++)
-            b.values[(icol - 1) * col + l - 1] = b.values[(icol - 1) * col + l - 1] * pivinv;
+        pivinv = (1.0) / (values[icol - 1].getValue(icol - 1));
+        values[icol - 1].setValue(icol - 1, 1.0);
+        values[icol - 1].multiply(pivinv);
+        b.values[icol - 1].multiply(pivinv);
         for (ll = 1; ll <= row; ll++)
             if (ll != icol) {
-                dum = values[(ll - 1) * col + icol - 1];
-                values[(ll - 1) * col + icol - 1] = 0.0;
+                dum = values[ll - 1].getValue(icol - 1);
+                values[ll - 1].setValue(icol - 1, 0.0);
                 for (l = 1; l <= row; l++)
-                    values[(ll - 1) * col + l - 1] = values[(ll - 1) * col + l - 1] - values[(icol - 1) * col + l - 1] * dum;
+                    values[ll - 1].setValue(l - 1, values[ll - 1].getValue(l - 1) - values[icol - 1].getValue(l - 1) * dum);
                 for (l = 1; l <= row; l++)
-                    b.values[(ll - 1) * col + l - 1] = b.values[(ll - 1) * col + l - 1] - b.values[(icol - 1) * col + l - 1] * dum;
+                    b.values[ll - 1].setValue(l - 1, b.values[ll - 1].getValue(l - 1) - b.values[icol - 1].getValue(l - 1) * dum);
             }
     }
     for (l = row; l >= 1; l--){
         if (indxr[l - 1] != indxc[l - 1]){
             for (k = 1; k <= row; k++) {
-                dum = values[(k - 1) * col + indxr[l - 1] - 1];
-                values[(k - 1) * col + indxr[l - 1] - 1] = values[(k - 1) * col + indxc[l - 1] - 1];
-                values[(k - 1) * col + indxc[l - 1] - 1] = dum;
+                values[k - 1].swap(indxr[l - 1] - 1, indxc[l - 1] - 1);
             }
         }
     }
@@ -649,15 +625,15 @@ Matrix Matrix::choleskyDecomposition() {
     Matrix b(row, col);
     for (i = 0; i < row; i++) {
         for (j = i; j < row; j++) {
-            sum = values[i * col + j];
+            sum = values[i].getValue(j);
             for (k = i - 1; k >= 0; k--)
-                sum -= values[i * col + k] * values[j * col + k];
+                sum -= values[i].getValue(k) * values[j].getValue(k);
             if (i == j) {
                 if (sum <= 0.0)
                     throw MatrixNotPositiveDefinite();
-                b.values[i * col + i] = sqrt(sum);
+                b.values[i].setValue(i, sqrt(sum));
             } else
-                b.values[j * col + i] = sum / b.values[i * col + i];
+                b.values[j].setValue(i, sum / b.values[i].getValue(i));
         }
     }
     return b;
@@ -674,13 +650,13 @@ Matrix Matrix::choleskyDecomposition() {
  * @param l   integer input.
  */
 void Matrix::rotate(double s, double tau, int i, int j, int k, int l) {
-    double g = values[i * col + j];
-    double h = values[k * col + l];
-    values[i * col + j] = g - s * (h + g * tau);
-    values[k * col + l] = h + s * (g - h * tau);
+    double g = values[i].getValue(j);
+    double h = values[k].getValue(l);
+    values[i].setValue(j, g - s * (h + g * tau));
+    values[k].setValue(l, h + s * (g - h * tau));
 }
 
-bool comparator(Eigenvector i,Eigenvector j) { return (i.getEigenValue() < j.getEigenValue()); }
+bool comparator(Eigenvector i, Eigenvector j) { return (i.getEigenValue() < j.getEigenValue()); }
 
 /**
  * The characteristics method finds and returns a sorted {@link vector} of {@link Eigenvector}s. And it throws
@@ -694,28 +670,21 @@ vector<Eigenvector> Matrix::characteristics() {
     if (!isSymmetric()) {
         throw MatrixNotSymmetric();
     }
-    Matrix matrix1(row, col);
-    memcpy(matrix1.values, values, row * col * sizeof(double));
-    Matrix v(row, row);
+    Matrix matrix1 = this->clone();
+    Matrix v(row);
     double* d = new double[row];
     double* b = new double[row];
     double* z = new double[row];
     double EPS = 0.000000000000000001;
     for (ip = 0; ip < row; ip++) {
-        for (iq = 0; iq < row; iq++) {
-            v.values[ip * col + iq] = 0.0;
-        }
-        v.values[ip * col + ip] = 1.0;
-    }
-    for (ip = 0; ip < row; ip++) {
-        b[ip] = d[ip] = matrix1.values[ip * col + ip];
+        b[ip] = d[ip] = matrix1.values[ip].getValue(ip);
         z[ip] = 0.0;
     }
     for (i = 1; i <= 50; i++) {
         sm = 0.0;
         for (ip = 0; ip < row - 1; ip++)
             for (iq = ip + 1; iq < row; iq++)
-                sm += abs(matrix1.values[ip * col + iq]);
+                sm += abs(matrix1.values[ip].getValue(iq));
         if (sm == 0.0) {
             break;
         }
@@ -725,16 +694,16 @@ vector<Eigenvector> Matrix::characteristics() {
             threshold = 0.0;
         for (ip = 0; ip < row - 1; ip++) {
             for (iq = ip + 1; iq < row; iq++) {
-                g = 100.0 * abs(matrix1.values[ip * col + iq]);
+                g = 100.0 * abs(matrix1.values[ip].getValue(iq));
                 if (i > 4 && g <= EPS * abs(d[ip]) && g <= EPS * abs(d[iq])) {
-                    matrix1.values[ip * col + iq] = 0.0;
+                    matrix1.values[ip].setValue(iq, 0.0);
                 } else {
-                    if (abs(matrix1.values[ip * col + iq]) > threshold) {
+                    if (abs(matrix1.values[ip].getValue(iq)) > threshold) {
                         h = d[iq] - d[ip];
                         if (g <= EPS * abs(h)) {
-                            t = matrix1.values[ip * col + iq] / h;
+                            t = matrix1.values[ip].getValue(iq) / h;
                         } else {
-                            theta = 0.5 * h / matrix1.values[ip * col + iq];
+                            theta = 0.5 * h / matrix1.values[ip].getValue(iq);
                             t = 1.0 / (abs(theta) + sqrt(1.0 + pow(theta, 2)));
                             if (theta < 0.0) {
                                 t = -t;
@@ -743,12 +712,12 @@ vector<Eigenvector> Matrix::characteristics() {
                         c = 1.0 / sqrt(1 + pow(t, 2));
                         s = t * c;
                         tau = s / (1.0 + c);
-                        h = t * matrix1.values[ip * col + iq];
+                        h = t * matrix1.values[ip].getValue(iq);
                         z[ip] -= h;
                         z[iq] += h;
                         d[ip] -= h;
                         d[iq] += h;
-                        matrix1.values[ip * col + iq] = 0.0;
+                        matrix1.values[ip].setValue(iq, 0.0);
                         for (j = 0; j < ip; j++) {
                             matrix1.rotate(s, tau, j, ip, j, iq);
                         }
@@ -781,10 +750,16 @@ vector<Eigenvector> Matrix::characteristics() {
     delete[] d;
     delete[] b;
     delete[] z;
-    delete[] matrix1.values;
     return result;
 }
 
-Matrix::~Matrix() {
-    delete[] values;
+Matrix Matrix::clone() {
+    Matrix result = Matrix(row, col);
+    for (int i = 0; i < row; i++){
+        result.values[i] = Vector(col, 0.0);
+        for (int j = 0; j < col; j++){
+            result.values[i].setValue(j, values[i].getValue(j));
+        }
+    }
+    return result;
 }

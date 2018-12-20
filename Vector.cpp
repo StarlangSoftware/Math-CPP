@@ -380,3 +380,23 @@ void Vector::addValue(unsigned long index, double value) {
 unsigned long Vector::getSize() {
     return size;
 }
+
+/**
+ * The sum method returns the sum of the values {@link vector}.
+ *
+ * @return sum of the values {@link vector}.
+ */
+double Vector::sum() {
+    double sum = 0.0;
+    for (int i = 0; i < size; i++) {
+        sum += values.at(i);
+    }
+    return sum;
+}
+
+void Vector::swap(int index1, int index2) {
+    double tmp;
+    tmp = values.at(index1);
+    values[index1] = values.at(index2);
+    values[index2] = tmp;
+}
