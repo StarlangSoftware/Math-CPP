@@ -51,13 +51,13 @@ void DiscreteDistribution::removeItem(string item) {
  * @param distribution {@link DiscreteDistribution} type input.
  */
 void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
-    for (auto it = begin(); it != end(); it++) {
-        if (containsItem(it->first)) {
-            insert_or_assign(it->first, it->second + find(it->first)->second);
+    for (auto &it : *this) {
+        if (containsItem(it.first)) {
+            insert_or_assign(it.first, it.second + find(it.first)->second);
         } else {
-            emplace(it->first, it->second);
+            emplace(it.first, it.second);
         }
-        sum += it->second;
+        sum += it.second;
     }
 }
 
@@ -69,13 +69,13 @@ void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
  * @param distribution {@link DiscreteDistribution} type input.
  */
 void DiscreteDistribution::removeDistribution(DiscreteDistribution distribution) {
-    for (auto it = begin(); it != end(); it++) {
-        if (find(it->first)->second - it->second != 0) {
-            insert_or_assign(it->first, it->second - find(it->first)->second);
+    for (auto &it : *this) {
+        if (find(it.first)->second - it.second != 0) {
+            insert_or_assign(it.first, it.second - find(it.first)->second);
         } else {
-            erase(it->first);
+            erase(it.first);
         }
-        sum -= it->second;
+        sum -= it.second;
     }
 }
 
@@ -118,10 +118,10 @@ int DiscreteDistribution::getCount(string item) {
 string DiscreteDistribution::getMaxItem() {
     int max = -1;
     string maxItem = "";
-    for (auto it = begin(); it != end(); it++) {
-        if (it->second > max) {
-            max = it->second;
-            maxItem = it->first;
+    for (auto &it : *this) {
+        if (it.second > max) {
+            max = it.second;
+            maxItem = it.first;
         }
     }
     return maxItem;
@@ -137,7 +137,7 @@ string DiscreteDistribution::getMaxItem() {
 string DiscreteDistribution::getMaxItem(vector<string> includeTheseOnly) {
     int max = -1;
     string maxItem = "";
-    for (string item : includeTheseOnly) {
+    for (const string &item : includeTheseOnly) {
         int frequency = 0;
         if (containsItem(item)) {
             frequency = find(item)->second;
@@ -187,9 +187,20 @@ double DiscreteDistribution::getProbabilityLaplaceSmoothing(string item) {
  */
 double DiscreteDistribution::entropy() {
     double total = 0.0, probability;
-    for (auto it = begin(); it != end(); it++) {
-        probability = it->second / sum;
+    for (auto &it : *this) {
+        probability = it.second / sum;
         total += -probability * (log(probability) / log(2));
     }
     return total;
+}
+
+int DiscreteDistribution::getIndex(string item) {
+    int i = 0;
+    for (auto &it : *this) {
+        if (it.first == item){
+            return i;
+        }
+        i++;
+    }
+    return -1;
 }
