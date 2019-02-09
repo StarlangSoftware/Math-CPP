@@ -204,3 +204,11 @@ int DiscreteDistribution::getIndex(string item) {
     }
     return -1;
 }
+
+vector<string> DiscreteDistribution::getItems() {
+    vector<string> result;
+    for (auto &it : *this){
+        result.push_back(it.first);
+    }
+    return result;
+}
