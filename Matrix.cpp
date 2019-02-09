@@ -87,13 +87,12 @@ Matrix::Matrix(int row, int col, double min, double max) {
  * @param size is used declaring the size of the array.
  */
 Matrix::Matrix(int size) {
-    int i;
+    row = size;
+    col = size;
     for (int i = 0; i < row; i++){
         values.emplace_back(Vector(col, 0.0));
     }
-    row = size;
-    col = size;
-    for (i = 0; i < size; i++) {
+    for (int i = 0; i < row; i++) {
         values[i].setValue(i, 1);
     }
 }
