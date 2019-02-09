@@ -14,7 +14,7 @@
  */
 Vector::Vector(vector<double> values) {
     this->values = values;
-    size = values.capacity();
+    size = values.size();
 }
 
 /**
