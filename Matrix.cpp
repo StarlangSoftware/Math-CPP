@@ -98,6 +98,28 @@ Matrix::Matrix(int size) {
 }
 
 /**
+ * Another constructor takes two {@link Vector}s v1 and v2 as an input and creates new {@link Matrix} m of [size x size of input v].
+ * It loops through the the both values {@link Vector} and given vector's values {@link Vector}, then multiply
+ * each item with other with other items and puts to the new {@link Matrix} m.
+ *
+ * @param v1 Vector input.
+ * @param v2 Vector input.
+ * @return Matrix that is the multiplication of two vectors.
+ */
+Matrix::Matrix(Vector v1, Vector v2) {
+    row = v1.getSize();
+    col = v2.getSize();
+    for (int i = 0; i < row; i++){
+        values.emplace_back(Vector(col, 0.0));
+    }
+    for (int i = 0; i < v1.getSize(); i++) {
+        for (int j = 0; j < v2.getSize(); j++) {
+            setValue(i, j, v1.getValue(i) * v2.getValue(j));
+        }
+    }
+}
+
+/**
  * The printToFile method takes a fileName as an input and prints values {@link array} into the file.
  *
  * @param fileName String input to write to file.
