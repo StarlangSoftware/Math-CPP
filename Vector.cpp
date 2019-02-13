@@ -206,7 +206,7 @@ Vector Vector::difference(Vector v) {
     }
     vector<double> result(size);
     for (unsigned long i = 0; i < size; i++) {
-        result.push_back(values.at(i) - v.values.at(i));
+        result[i] = values.at(i) - v.values.at(i);
     }
     return Vector(result);
 }
@@ -258,7 +258,7 @@ Vector Vector::elementProduct(Vector v) {
     }
     vector<double> result(size);
     for (unsigned long i = 0; i < size; i++) {
-        result.push_back(values.at(i) * v.values.at(i));
+        result[i] = values.at(i) * v.values.at(i);
     }
     return Vector(result);
 }
