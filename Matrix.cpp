@@ -206,9 +206,10 @@ Vector Matrix::getRow(int row) {
  * @return Vector of given column number.
  */
 vector<double> Matrix::getColumn(int column) {
-    vector<double> vector((unsigned long) row);
+    vector<double> vector;
+    vector.reserve(row);
     for (int i = 0; i < row; i++) {
-        vector.push_back(values[i].getValue(column));
+        vector[i] = values[i].getValue(column);
     }
     return vector;
 }
