@@ -30,7 +30,7 @@ Matrix::Matrix(string fileName) {
     inputStream >> col;
     values.reserve(row);
     for (int i = 0; i < row; i++) {
-        values[i] = Vector(col, 0.0);
+        values.push_back(Vector(col, 0.0));
         for (int j = 0; j < col; j++) {
             inputStream >> value;
             values[i].setValue(j, value);
@@ -209,7 +209,7 @@ vector<double> Matrix::getColumn(int column) {
     vector<double> vector;
     vector.reserve(row);
     for (int i = 0; i < row; i++) {
-        vector[i] = values[i].getValue(column);
+        vector.push_back(values[i].getValue(column));
     }
     return vector;
 }

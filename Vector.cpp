@@ -54,7 +54,7 @@ Vector::Vector(unsigned long size, int index, double x) {
 Vector::Vector(double* values, unsigned long size) {
     this->values.reserve(size);
     for (int i = 0; i < size; i++) {
-        this->values[i] = values[i];
+        this->values.push_back(values[i]);
     }
     this->size = size;
 }
