@@ -4,7 +4,7 @@
 
 #ifndef MATH_MATRIX_H
 #define MATH_MATRIX_H
-#include<string>
+#include <string>
 #include "Vector.h"
 #include "Eigenvector.h"
 
