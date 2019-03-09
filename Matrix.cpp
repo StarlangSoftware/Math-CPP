@@ -5,6 +5,7 @@
 #include <fstream>
 #include <random>
 #include <complex>
+#include <algorithm>
 #include "Matrix.h"
 #include "MatrixDimensionMismatch.h"
 #include "MatrixColumnMismatch.h"
