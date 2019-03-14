@@ -5,13 +5,6 @@
 #include "Matrix.h"
 
 int main(){
-    Matrix matrix(2, 2);
-    matrix.increment(0, 0);
-    matrix.increment(0, 1);
-    matrix.increment(1, 0);
-    matrix.increment(1, 1);
-    matrix.increment(0, 0);
-    matrix.increment(0, 1);
-    matrix.increment(1, 0);
-    matrix.increment(1, 1);
+    Matrix m(1000, 1000, 0.0, 1.0);
+    m.inverse();
 }
