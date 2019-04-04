@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <fstream>
 #include "Vector.h"
 #include "VectorSizeMismatch.h"
 
@@ -400,4 +401,21 @@ void Vector::swap(int index1, int index2) {
     tmp = values.at(index1);
     values[index1] = values.at(index2);
     values[index2] = tmp;
+}
+
+void Vector::serialize(ostream &outputFile) {
+    outputFile << values.size() << " ";
+    for (double value : values){
+        outputFile << value << " ";
+    }
+    outputFile << "\n";
+}
+
+Vector::Vector(ifstream &inputFile) {
+    inputFile >> size;
+    for (int i = 0; i < size; i++){
+        double value;
+        inputFile >> value;
+        values.push_back(value);
+    }
 }

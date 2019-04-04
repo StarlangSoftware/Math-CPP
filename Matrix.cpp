@@ -785,3 +785,20 @@ Matrix Matrix::clone() {
     }
     return result;
 }
+
+void Matrix::serialize(ostream &outputFile) {
+    outputFile << row << "\n";
+    outputFile << col << "\n";
+    for (int i = 0; i < row; i++){
+        values.at(i).serialize(outputFile);
+    }
+}
+
+Matrix::Matrix(ifstream &inputFile) {
+    inputFile >> row;
+    inputFile >> col;
+    values.reserve(row);
+    for (int i = 0; i < row; i++) {
+        values.emplace_back(Vector(inputFile));
+    }
+}
