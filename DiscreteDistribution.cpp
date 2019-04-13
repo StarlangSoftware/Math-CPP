@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <fstream>
+#include <ostream>
 #include "DiscreteDistribution.h"
 
 /**
@@ -117,7 +119,7 @@ int DiscreteDistribution::getCount(string item) {
  */
 string DiscreteDistribution::getMaxItem() {
     int max = -1;
-    string maxItem = "";
+    string maxItem;
     for (auto &it : *this) {
         if (it.second > max) {
             max = it.second;
@@ -136,7 +138,7 @@ string DiscreteDistribution::getMaxItem() {
  */
 string DiscreteDistribution::getMaxItem(vector<string> includeTheseOnly) {
     int max = -1;
-    string maxItem = "";
+    string maxItem;
     for (const string &item : includeTheseOnly) {
         int frequency = 0;
         if (containsItem(item)) {
@@ -211,4 +213,26 @@ vector<string> DiscreteDistribution::getItems() {
         result.push_back(it.first);
     }
     return result;
+}
+
+void DiscreteDistribution::serialize(ostream &outputFile) {
+    outputFile << sum << "\n";
+    outputFile << this->size() << "\n";
+    for (auto &it : *this) {
+        outputFile << it.first << "\n";
+        outputFile << it.second << "\n";
+    }
+}
+
+DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
+    int size;
+    string item;
+    int count;
+    inputFile >> sum;
+    inputFile >> size;
+    for (int i = 0; i < size; i++){
+        inputFile >> item;
+        inputFile >> count;
+        emplace(item, count);
+    }
 }
