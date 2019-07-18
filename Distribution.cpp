@@ -91,10 +91,10 @@ double Distribution::zNormal(double z) {
 }
 
 /**
- * The zInverse method returns the Z-Inverse of given input value.
+ * The zInverse method returns the Z-Inverse of given probability.
  *
- * @param p double input.
- * @return the Z-Inverse of given input value.
+ * @param p double probability.
+ * @return the Z-Inverse of given probability.
  */
 double Distribution::zInverse(double p) {
     double minz = -Z_MAX;
@@ -182,11 +182,11 @@ double Distribution::chiSquare(double x, int freedom) {
 }
 
 /**
- * The chiSquareInverse method returns the Chi Square-Inverse of given input value with given degree of freedom.
+ * The chiSquareInverse method returns the Chi Square-Inverse of given probability with given degree of freedom.
  *
- * @param p       double input.
+ * @param p       double probability.
  * @param freedom integer input for degrees of freedom.
- * @return chi square-Inverse of given input value.
+ * @return chi square-Inverse of given probability.
  */
 double Distribution::chiSquareInverse(double p, int freedom) {
     double minchisq = 0.0;
@@ -287,12 +287,12 @@ double Distribution::fDistribution(double F, int freedom1, int freedom2) {
 }
 
 /**
- * The fDistributionInverse method returns the F-Distribution Inverse of given input value.
+ * The fDistributionInverse method returns the F-Distribution Inverse of given probability.
  *
- * @param p        double input.
+ * @param p        double probability.
  * @param freedom1 integer input for degrees of freedom.
  * @param freedom2 integer input for degrees of freedom.
- * @return the F-Distribution Inverse of given input value.
+ * @return the F-Distribution Inverse of given probability.
  */
 double Distribution::fDistributionInverse(double p, int freedom1, int freedom2) {
     double fval;
@@ -333,11 +333,11 @@ double Distribution::tDistribution(double T, int freedom) {
 }
 
 /**
- * The tDistributionInverse method returns the T-Distribution Inverse of given input value.
+ * The tDistributionInverse method returns the T-Distribution Inverse of given probability.
  *
- * @param p       double input.
+ * @param p       double probability.
  * @param freedom integer input for degrees of freedom.
- * @return the T-Distribution Inverse of given input value.
+ * @return the T-Distribution Inverse of given probability.
  */
 double Distribution::tDistributionInverse(double p, int freedom) {
     if (p < 0.5) {
