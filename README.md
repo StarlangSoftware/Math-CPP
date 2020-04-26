@@ -2,8 +2,8 @@
 
 For Developers
 ============
-You can also see either [Python](https://github.com/olcaytaner/Math-Py) 
-or [Java](https://github.com/olcaytaner/Math) repository.
+You can also see [Java](https://github.com/starlangsoftware/Math), [Python](https://github.com/starlangsoftware/Math-Py),  or [C#](https://github.com/starlangsoftware/Math-CS) repository.
+
 ## Requirements
 
 * [C++ Compiler](#cpp)
