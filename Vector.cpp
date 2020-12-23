@@ -110,9 +110,22 @@ void Vector::remove(int pos) {
  * The clear method sets all the elements of values {@link vector} to 0.0.
  */
 void Vector::clear() {
-    for (int i = 0; i < values.size(); i++) {
-        values[i] = 0.0;
+    for (double & value : values) {
+        value = 0.0;
     }
+}
+
+/**
+ * The sumOfElements method sums up all elements in the vector.
+ *
+ * @return Sum of all elements in the vector.
+ */
+double Vector::sumOfElements() {
+    double total = 0;
+    for (int i = 0; i < size; i++) {
+        total += values[i];
+    }
+    return total;
 }
 
 /**
@@ -173,7 +186,7 @@ void Vector::add(Vector v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
-    for (unsigned long i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         values[i] = values.at(i) + v.values.at(i);
     }
 }
@@ -226,7 +239,7 @@ double Vector::dotProduct(Vector v) {
         throw VectorSizeMismatch();
     }
     double result = 0;
-    for (unsigned long i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         result += values.at(i) * v.values.at(i);
     }
     return result;
@@ -240,7 +253,7 @@ double Vector::dotProduct(Vector v) {
  */
 double Vector::dotProduct() {
     double result = 0;
-    for (unsigned long i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         result += values.at(i) * values.at(i);
     }
     return result;

@@ -53,7 +53,7 @@ void DiscreteDistribution::removeItem(string item) {
  * @param distribution {@link DiscreteDistribution} type input.
  */
 void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
-    for (auto &it : *this) {
+    for (auto &it : distribution) {
         if (containsItem(it.first)) {
             insert_or_assign(it.first, it.second + find(it.first)->second);
         } else {
@@ -71,9 +71,9 @@ void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
  * @param distribution {@link DiscreteDistribution} type input.
  */
 void DiscreteDistribution::removeDistribution(DiscreteDistribution distribution) {
-    for (auto &it : *this) {
+    for (auto &it : distribution) {
         if (find(it.first)->second - it.second != 0) {
-            insert_or_assign(it.first, it.second - find(it.first)->second);
+            insert_or_assign(it.first, find(it.first)->second - it.second);
         } else {
             erase(it.first);
         }
