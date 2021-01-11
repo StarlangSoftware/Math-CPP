@@ -18,7 +18,7 @@ private:
 public:
     explicit Matrix(string filename);
     Matrix(int row, int col);
-    Matrix(int row, int col, double min, double max);
+    Matrix(int row, int col, double min, double max, default_random_engine randomEngine);
     explicit Matrix(int size);
     Matrix(Vector v1, Vector v2);
     explicit Matrix(ifstream& inputFile);

@@ -64,18 +64,16 @@ Matrix::Matrix(int row, int col) {
  * @param min minimum value.
  * @param max maximum value.
  */
-Matrix::Matrix(int row, int col, double min, double max) {
+Matrix::Matrix(int row, int col, double min, double max, default_random_engine randomEngine) {
     for (int i = 0; i < row; i++){
         values.emplace_back(Vector(col, 0.0));
     }
     this->row = row;
     this->col = col;
-    random_device rd;
-    mt19937 gen(rd());
     uniform_real_distribution <> distribution (min, max);
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
-            values[i].setValue(j, distribution(gen));
+            values[i].setValue(j, distribution(randomEngine));
         }
     }
 }

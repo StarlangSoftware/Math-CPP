@@ -40,7 +40,7 @@ TEST_CASE("MatrixTest-testMultiplyWithConstant") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     small.multiplyWithConstant(4);
     REQUIRE(36 == small.sumOfElements());
@@ -63,7 +63,7 @@ TEST_CASE("MatrixTest-testDivideByConstant") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     small.divideByConstant(4);
     REQUIRE(2.25 == small.sumOfElements());
@@ -74,7 +74,7 @@ TEST_CASE("MatrixTest-testDivideByConstant") {
 }
 
 TEST_CASE("MatrixTest-testAdd") {
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Matrix identity = Matrix(100);
     random.add(identity);
@@ -94,7 +94,7 @@ TEST_CASE("MatrixTest-testAddVector") {
 }
 
 TEST_CASE("MatrixTest-testSubtract") {
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Matrix identity = Matrix(100);
     random.subtract(identity);
@@ -114,7 +114,7 @@ TEST_CASE("MatrixTest-testMultiplyWithVectorFromLeft") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Vector v = Vector(3, 1.0);
     Vector V = Vector(1000, 1.0);
@@ -140,7 +140,7 @@ TEST_CASE("MatrixTest-testMultiplyWithVectorFromRight") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Vector v = Vector(3, 1.0);
     Vector V = Vector(1000, 1.0);
@@ -186,7 +186,7 @@ TEST_CASE("MatrixTest-testSumOfRows") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.sumOfRows().sumOfElements());
     REQUIRE(1000000 == large.sumOfRows().sumOfElements());
@@ -227,7 +227,7 @@ TEST_CASE("MatrixTest-testMultiply") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Matrix result = small.multiply(small);
     REQUIRE(27 == result.sumOfElements());
@@ -253,7 +253,7 @@ TEST_CASE("MatrixTest-testElementProduct") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     Matrix result = small.elementProduct(small);
     REQUIRE(9 == result.sumOfElements());
     result = large.elementProduct(large);
@@ -276,7 +276,7 @@ TEST_CASE("MatrixTest-testSumOfElements") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.sumOfRows().sumOfElements());
     REQUIRE(1000000 == large.sumOfRows().sumOfElements());
@@ -317,7 +317,7 @@ TEST_CASE("MatrixTest-testTranspose") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.transpose().sumOfElements());
     REQUIRE(1000000 == large.transpose().sumOfElements());
@@ -339,7 +339,7 @@ TEST_CASE("MatrixTest-testIsSymmetric") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     REQUIRE_FALSE(!small.isSymmetric());
     REQUIRE_FALSE(!large.isSymmetric());
     REQUIRE_FALSE(!identity.isSymmetric());
@@ -379,7 +379,7 @@ TEST_CASE("MatrixTest-testInverse") {
         }
     }
     Matrix identity = Matrix(100);
-    Matrix random = Matrix(100, 100, 1, 10);
+    Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     identity.inverse();
     REQUIRE(100 == identity.sumOfElements());
