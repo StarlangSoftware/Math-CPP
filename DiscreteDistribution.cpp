@@ -236,3 +236,11 @@ DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
         emplace(item, count);
     }
 }
+
+map<string, double> DiscreteDistribution::getProbabilityDistribution() {
+    map<string, double> result;
+    for (auto &it : *this) {
+        result.insert_or_assign(it.first, getProbability(it.first));
+    }
+    return result;
+}
