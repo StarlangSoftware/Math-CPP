@@ -158,6 +158,40 @@ void Vector::sigmoid() {
 }
 
 /**
+ * The tanh method loops through the values {@link ArrayList} and sets each ith item with tanh function.
+ */
+void Vector::tanh() {
+    for (unsigned long i = 0; i < size; i++) {
+        values[i] = ::tanh(values[i]);
+    }
+}
+
+/**
+ * The relu method loops through the values {@link ArrayList} and sets each ith item with relu function.
+ */
+void Vector::relu() {
+    for (unsigned long i = 0; i < size; i++) {
+        if (values[i] < 0){
+            values[i] = 0.0;
+        }
+    }
+}
+
+/**
+ * The reluDerivative method loops through the values {@link ArrayList} and sets each ith item with the derivative of
+ * relu function.
+ */
+void Vector::reluDerivative() {
+    for (unsigned long i = 0; i < size; i++) {
+        if (values[i] > 0){
+            values[i] = 1.0;
+        } else {
+            values[i] = 0.0;
+        }
+    }
+}
+
+/**
  * The skipVector method takes a mod and a value as inputs. It creates a new result Vector, and assigns given input value to i.
  * While i is less than the size, it adds the ith item of values {@link vector} to the result and increments i by given mod input.
  *
