@@ -4,7 +4,7 @@
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-#include "../Distribution.h"
+#include "../src/Distribution.h"
 
 TEST_CASE("DistributionTest-testZNormal") {
     REQUIRE_THAT(0.5, Catch::Matchers::WithinAbs(Distribution::zNormal(0.0), 0.0));

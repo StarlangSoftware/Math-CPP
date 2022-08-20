@@ -146,3 +146,10 @@ cmake-build-debug/CMakeFiles/3.19.2/CompilerIdCXX/a.out
 /cmake-build-debug/CMakeFiles/3.21.1/CMakeDetermineCompilerABI_C.bin
 /cmake-build-debug/CMakeFiles/3.21.1/CMakeDetermineCompilerABI_CXX.bin
 /cmake-build-debug/CMakeFiles/3.21.1/CMakeSystem.cmake
+/cmake-build-debug/bin/
+/cmake-build-debug/CMakeFiles/
+/cmake-build-debug/conan.lock
+/cmake-build-debug/conanbuildinfo.cmake
+/cmake-build-debug/conanbuildinfo.txt
+/cmake-build-debug/conaninfo.txt
+/cmake-build-debug/graph_info.json

@@ -3,7 +3,7 @@
 //
 
 #include "catch.hpp"
-#include "../Matrix.h"
+#include "../src/Matrix.h"
 
 TEST_CASE("MatrixTest-testColumnWiseNormalize") {
     Matrix small = Matrix(3, 3);

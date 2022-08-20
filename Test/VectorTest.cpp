@@ -3,7 +3,7 @@
 //
 
 #include "catch.hpp"
-#include "../Vector.h"
+#include "../src/Vector.h"
 
 TEST_CASE("VectorTest-testBiased") {
     double data1[] = {2, 3, 4, 5, 6};

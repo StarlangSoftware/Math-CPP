@@ -3,7 +3,7 @@
 //
 
 #include "catch.hpp"
-#include "../DiscreteDistribution.h"
+#include "../src/DiscreteDistribution.h"
 
 TEST_CASE("DiscreteDistributionTest-testAddItem1") {
     DiscreteDistribution smallDistribution = DiscreteDistribution();
