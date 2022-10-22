@@ -14,7 +14,7 @@
  * @param eigenValue double input.
  * @param values     {@link vector} input.
  */
-Eigenvector::Eigenvector(double eigenValue, vector<double> values) : Vector(move(values)) {
+Eigenvector::Eigenvector(double eigenValue, const vector<double>& values) : Vector(values) {
     this->eigenValue = eigenValue;
 }
 

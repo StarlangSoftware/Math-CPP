@@ -10,7 +10,7 @@ class Eigenvector : public Vector{
 private:
     double eigenValue;
 public:
-    Eigenvector(double eigenValue, vector<double> values);
+    Eigenvector(double eigenValue, const vector<double>& values);
     double getEigenValue();
 };
 

@@ -13,7 +13,7 @@
  *
  * @param values {@link vector} input.
  */
-Vector::Vector(vector<double> values) {
+Vector::Vector(const vector<double>& values) {
     this->values = values;
     size = values.size();
 }
@@ -216,7 +216,7 @@ Vector Vector::skipVector(unsigned long mod, unsigned long value) {
  *
  * @param v Vector to add.
  */
-void Vector::add(Vector v) {
+void Vector::add(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -232,7 +232,7 @@ void Vector::add(Vector v) {
  *
  * @param v Vector to subtract from values {@link vector}.
  */
-void Vector::subtract(Vector v) {
+void Vector::subtract(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -249,7 +249,7 @@ void Vector::subtract(Vector v) {
  * @param v Vector to find difference from values {@link vector}.
  * @return new {@link Vector} with result {@link array}.
  */
-Vector Vector::difference(Vector v) {
+Vector Vector::difference(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -268,7 +268,7 @@ Vector Vector::difference(Vector v) {
  * @param v Vector to find dot product.
  * @return double result.
  */
-double Vector::dotProduct(Vector v) {
+double Vector::dotProduct(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -301,7 +301,7 @@ double Vector::dotProduct() {
  * @param v Vector to find dot product.
  * @return Vector with result {@link array}.
  */
-Vector Vector::elementProduct(Vector v) {
+Vector Vector::elementProduct(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -369,7 +369,7 @@ void Vector::l1Normalize() {
  *
  * @return square root of this summation.
  */
-double Vector::l2Norm() {
+double Vector::l2Norm() const{
     double sum = 0;
     for (int i = 0; i < size; i++) {
         sum += pow(values.at(i), 2);
@@ -384,7 +384,7 @@ double Vector::l2Norm() {
  * @param v Vector input.
  * @return dotProduct(v) / l2Norm() / v.l2Norm().
  */
-double Vector::cosineSimilarity(Vector v) {
+double Vector::cosineSimilarity(const Vector& v) {
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -397,7 +397,7 @@ double Vector::cosineSimilarity(Vector v) {
  * @param index used to get an item.
  * @return the item at given index.
  */
-double Vector::getValue(unsigned long index) {
+double Vector::getValue(unsigned long index) const{
     return values.at(index);
 }
 
@@ -426,7 +426,7 @@ void Vector::addValue(unsigned long index, double value) {
  *
  * @return size of the values {@link vector}.
  */
-unsigned long Vector::getSize() {
+unsigned long Vector::getSize() const {
     return size;
 }
 

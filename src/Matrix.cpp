@@ -23,14 +23,14 @@ using namespace std;
  *
  * @param filename is used to read file.
  */
-Matrix::Matrix(string fileName) {
+Matrix::Matrix(const string& fileName) {
     double value;
     ifstream inputStream(fileName, ios::in);
     inputStream >> row;
     inputStream >> col;
     values.reserve(row);
     for (int i = 0; i < row; i++) {
-        values.push_back(Vector(col, 0.0));
+        values.emplace_back(col, 0.0);
         for (int j = 0; j < col; j++) {
             inputStream >> value;
             values[i].setValue(j, value);
@@ -104,7 +104,7 @@ Matrix::Matrix(int size) {
  * @param v2 Vector input.
  * @return Matrix that is the multiplication of two vectors.
  */
-Matrix::Matrix(Vector v1, Vector v2) {
+Matrix::Matrix(const Vector& v1, const Vector& v2) {
     row = v1.getSize();
     col = v2.getSize();
     for (int i = 0; i < row; i++){
@@ -122,7 +122,7 @@ Matrix::Matrix(Vector v1, Vector v2) {
  *
  * @param fileName String input to write to file.
  */
-void Matrix::printToFile(string fileName) {
+void Matrix::printToFile(const string& fileName) {
     ofstream outputStream(fileName, ios::out);
     for (int i = 0; i < row; i++) {
         outputStream << values[i].getValue(0);
@@ -189,11 +189,11 @@ int Matrix::getRow() {
 /**
  * The getRow method returns the vector of values {@link array} at given row input.
  *
- * @param row integer input for row number.
+ * @param _row integer input for row number.
  * @return Vector of values {@link array} at given row input.
  */
-Vector Matrix::getRow(int row) {
-    return values[row];
+Vector Matrix::getRow(int _row) {
+    return values[_row];
 }
 
 /**
@@ -243,7 +243,7 @@ void Matrix::columnWiseNormalize() {
  * @param constant value to multiply items of values {@link array}.
  */
 void Matrix::multiplyWithConstant(double constant) {
-    int i, j;
+    int i;
     for (i = 0; i < row; i++) {
         values[i].multiply(constant);
     }
@@ -256,7 +256,7 @@ void Matrix::multiplyWithConstant(double constant) {
  * @param constant value to divide items of values {@link array}.
  */
 void Matrix::divideByConstant(double constant) {
-    int i, j;
+    int i;
     for (i = 0; i < row; i++) {
         values[i].divide(constant);
     }
@@ -269,7 +269,7 @@ void Matrix::divideByConstant(double constant) {
  *
  * @param m Matrix type input.
  */
-void Matrix::add(Matrix m) {
+void Matrix::add(const Matrix& m) {
     int i, j;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -287,7 +287,7 @@ void Matrix::add(Matrix m) {
  * @param rowNo integer input for row number.
  * @param v     Vector type input.
  */
-void Matrix::add(int rowNo, Vector v) {
+void Matrix::add(int rowNo, const Vector& v) {
     if (col != v.getSize()) {
         throw MatrixColumnMismatch();
     }
@@ -301,7 +301,7 @@ void Matrix::add(int rowNo, Vector v) {
  *
  * @param m Matrix type input.
  */
-void Matrix::subtract(Matrix m) {
+void Matrix::subtract(const Matrix& m) {
     int i, j;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -320,7 +320,7 @@ void Matrix::subtract(Matrix m) {
  * @param v {@link Vector} type input.
  * @return Vector that holds the result.
  */
-Vector Matrix::multiplyWithVectorFromLeft(Vector v) {
+Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) {
     if (row != v.getSize()) {
         throw MatrixRowMismatch();
     }
@@ -343,7 +343,7 @@ Vector Matrix::multiplyWithVectorFromLeft(Vector v) {
  * @param v {@link Vector} type input.
  * @return Vector that holds the result.
  */
-Vector Matrix::multiplyWithVectorFromRight(Vector v) {
+Vector Matrix::multiplyWithVectorFromRight(const Vector& v) {
     if (col != v.getSize()) {
         throw new MatrixColumnMismatch();
     }
@@ -403,7 +403,7 @@ double Matrix::rowSum(int rowNo) {
  * @param m Matrix type input.
  * @return result {@link Matrix}.
  */
-Matrix Matrix::multiply(Matrix m) {
+Matrix Matrix::multiply(const Matrix& m) {
     int i, j, k;
     double sum;
     Matrix result(row, m.col);
@@ -430,7 +430,7 @@ Matrix Matrix::multiply(Matrix m) {
  * @param m Matrix type input.
  * @return result {@link Matrix}.
  */
-Matrix Matrix::elementProduct(Matrix m) {
+Matrix Matrix::elementProduct(const Matrix& m) {
     int i, j;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -692,9 +692,9 @@ vector<Eigenvector> Matrix::characteristics() {
     }
     Matrix matrix1 = this->clone();
     Matrix v(row);
-    double* d = new double[row];
-    double* b = new double[row];
-    double* z = new double[row];
+    auto* d = new double[row];
+    auto* b = new double[row];
+    auto* z = new double[row];
     double EPS = 0.000000000000000001;
     for (ip = 0; ip < row; ip++) {
         b[ip] = d[ip] = matrix1.values[ip].getValue(ip);

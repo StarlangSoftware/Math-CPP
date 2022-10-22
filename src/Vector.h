@@ -12,7 +12,7 @@ private:
     unsigned long size;
     vector<double> values;
 public:
-    explicit Vector(vector<double> values);
+    explicit Vector(const vector<double>& values);
     Vector(unsigned long size, double x);
     Vector(unsigned long size, int index, double x);
     Vector(double* values, unsigned long size);
@@ -29,20 +29,20 @@ public:
     void relu();
     void reluDerivative();
     Vector skipVector(unsigned long mod, unsigned long value);
-    void add(Vector v);
-    void subtract(Vector v);
-    Vector difference(Vector v);
-    double dotProduct(Vector v);
+    void add(const Vector& v);
+    void subtract(const Vector& v);
+    Vector difference(const Vector& v);
+    double dotProduct(const Vector& v);
     double dotProduct();
-    Vector elementProduct(Vector v);
+    Vector elementProduct(const Vector& v);
     void divide(double value);
     void multiply(double value);
     Vector product(double value);
     void l1Normalize();
-    double l2Norm();
-    unsigned long getSize();
-    double cosineSimilarity(Vector v);
-    double getValue(unsigned long index);
+    double l2Norm() const;
+    unsigned long getSize() const;
+    double cosineSimilarity(const Vector& v);
+    double getValue(unsigned long index) const;
     void setValue(unsigned long index, double value);
     void addValue(unsigned long index, double value);
     double sum();

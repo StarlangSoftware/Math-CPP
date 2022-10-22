@@ -21,8 +21,8 @@ DiscreteDistribution::DiscreteDistribution() : map() {
  *
  * @param item string input.
  */
-void DiscreteDistribution::addItem(string item) {
-    if (containsItem(item)) {
+void DiscreteDistribution::addItem(const string& item) {
+    if (contains(item)) {
         insert_or_assign(item, find(item)->second + 1);
     } else {
         emplace(item, 1);
@@ -36,8 +36,8 @@ void DiscreteDistribution::addItem(string item) {
  *
  * @param item String input.
  */
-void DiscreteDistribution::removeItem(string item) {
-    if (containsItem(item)) {
+void DiscreteDistribution::removeItem(const string& item) {
+    if (contains(item)) {
         insert_or_assign(item, find(item)->second - 1);
         if (find(item)->second == 0) {
             erase(item);
@@ -52,9 +52,9 @@ void DiscreteDistribution::removeItem(string item) {
  *
  * @param distribution {@link DiscreteDistribution} type input.
  */
-void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
+void DiscreteDistribution::addDistribution(const DiscreteDistribution& distribution) {
     for (auto &it : distribution) {
-        if (containsItem(it.first)) {
+        if (contains(it.first)) {
             insert_or_assign(it.first, it.second + find(it.first)->second);
         } else {
             emplace(it.first, it.second);
@@ -70,7 +70,7 @@ void DiscreteDistribution::addDistribution(DiscreteDistribution distribution) {
  *
  * @param distribution {@link DiscreteDistribution} type input.
  */
-void DiscreteDistribution::removeDistribution(DiscreteDistribution distribution) {
+void DiscreteDistribution::removeDistribution(const DiscreteDistribution& distribution) {
     for (auto &it : distribution) {
         if (find(it.first)->second - it.second != 0) {
             insert_or_assign(it.first, find(it.first)->second - it.second);
@@ -91,24 +91,13 @@ double DiscreteDistribution::getSum() {
 }
 
 /**
- * The containsItem method takes an item as an input and returns <tt>true</tt> if this map contains a mapping for the
- * given item.
- *
- * @param item to check.
- * @return <tt>true</tt> if this map contains a mapping for the given item.
- */
-bool DiscreteDistribution::containsItem(string item) {
-    return find(item) != end();
-}
-
-/**
  * The getCount method takes an item as an input returns the value to which the specified item is mapped, or {@code null}
  * if this map contains no mapping for the key.
  *
  * @param item is used to search for value.
  * @return the value to which the specified item is mapped
  */
-int DiscreteDistribution::getCount(string item) {
+int DiscreteDistribution::getCount(const string& item) {
     return find(item)->second;
 }
 
@@ -136,12 +125,12 @@ string DiscreteDistribution::getMaxItem() {
  * @param includeTheseOnly {@link vector} of Strings.
  * @return the item with maximum value.
  */
-string DiscreteDistribution::getMaxItem(vector<string> includeTheseOnly) {
+string DiscreteDistribution::getMaxItem(const vector<string>& includeTheseOnly) {
     int max = -1;
     string maxItem;
     for (const string &item : includeTheseOnly) {
         int frequency = 0;
-        if (containsItem(item)) {
+        if (contains(item)) {
             frequency = find(item)->second;
         }
         if (frequency > max) {
@@ -159,8 +148,8 @@ string DiscreteDistribution::getMaxItem(vector<string> includeTheseOnly) {
  * @param item is used to search for probability.
  * @return the probability to which the specified item is mapped.
  */
-double DiscreteDistribution::getProbability(string item) {
-    if (containsItem(item)) {
+double DiscreteDistribution::getProbability(const string& item) {
+    if (contains(item)) {
         return find(item)->second / sum;
     } else {
         return 0.0;
@@ -174,8 +163,8 @@ double DiscreteDistribution::getProbability(string item) {
  * @param item is used to search for probability.
  * @return the smoothed probability to which the specified item is mapped.
  */
-double DiscreteDistribution::getProbabilityLaplaceSmoothing(string item) {
-    if (containsItem(item)) {
+double DiscreteDistribution::getProbabilityLaplaceSmoothing(const string& item) {
+    if (contains(item)) {
         return (find(item)->second + 1) / (sum + size() + 1);
     } else {
         return 1.0 / (sum + size() + 1);
@@ -196,7 +185,7 @@ double DiscreteDistribution::entropy() {
     return total;
 }
 
-int DiscreteDistribution::getIndex(string item) {
+int DiscreteDistribution::getIndex(const string& item) {
     int i = 0;
     for (auto &it : *this) {
         if (it.first == item){

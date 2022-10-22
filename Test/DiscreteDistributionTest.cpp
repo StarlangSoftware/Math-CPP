@@ -25,7 +25,7 @@ TEST_CASE("DiscreteDistributionTest-testAddItem2") {
     }
     int count = 0;
     for (int i = 0; i < 1000; i++){
-        if (discreteDistribution.containsItem(to_string(i))){
+        if (discreteDistribution.contains(to_string(i))){
             count += discreteDistribution.getCount(to_string(i));
         }
     }
@@ -150,8 +150,8 @@ TEST_CASE("DiscreteDistributionTest-testContainsItem") {
     smallDistribution.addItem("item1");
     smallDistribution.addItem("item2");
     smallDistribution.addItem("item1");
-    REQUIRE_FALSE(!smallDistribution.containsItem("item1"));
-    REQUIRE_FALSE(smallDistribution.containsItem("item4"));
+    REQUIRE_FALSE(!smallDistribution.contains("item1"));
+    REQUIRE_FALSE(smallDistribution.contains("item4"));
 }
 
 TEST_CASE("DiscreteDistributionTest-testGetCount") {
