@@ -86,7 +86,7 @@ void DiscreteDistribution::removeDistribution(const DiscreteDistribution& distri
  *
  * @return sum.
  */
-double DiscreteDistribution::getSum() {
+double DiscreteDistribution::getSum() const{
     return sum;
 }
 
@@ -97,7 +97,7 @@ double DiscreteDistribution::getSum() {
  * @param item is used to search for value.
  * @return the value to which the specified item is mapped
  */
-int DiscreteDistribution::getCount(const string& item) {
+int DiscreteDistribution::getCount(const string& item) const{
     return find(item)->second;
 }
 
@@ -106,7 +106,7 @@ int DiscreteDistribution::getCount(const string& item) {
  *
  * @return the entry with maximum value.
  */
-string DiscreteDistribution::getMaxItem() {
+string DiscreteDistribution::getMaxItem() const{
     int max = -1;
     string maxItem;
     for (auto &it : *this) {
@@ -125,7 +125,7 @@ string DiscreteDistribution::getMaxItem() {
  * @param includeTheseOnly {@link vector} of Strings.
  * @return the item with maximum value.
  */
-string DiscreteDistribution::getMaxItem(const vector<string>& includeTheseOnly) {
+string DiscreteDistribution::getMaxItem(const vector<string>& includeTheseOnly) const{
     int max = -1;
     string maxItem;
     for (const string &item : includeTheseOnly) {
@@ -148,7 +148,7 @@ string DiscreteDistribution::getMaxItem(const vector<string>& includeTheseOnly) 
  * @param item is used to search for probability.
  * @return the probability to which the specified item is mapped.
  */
-double DiscreteDistribution::getProbability(const string& item) {
+double DiscreteDistribution::getProbability(const string& item) const{
     if (contains(item)) {
         return find(item)->second / sum;
     } else {
@@ -163,7 +163,7 @@ double DiscreteDistribution::getProbability(const string& item) {
  * @param item is used to search for probability.
  * @return the smoothed probability to which the specified item is mapped.
  */
-double DiscreteDistribution::getProbabilityLaplaceSmoothing(const string& item) {
+double DiscreteDistribution::getProbabilityLaplaceSmoothing(const string& item) const{
     if (contains(item)) {
         return (find(item)->second + 1) / (sum + size() + 1);
     } else {
@@ -176,7 +176,7 @@ double DiscreteDistribution::getProbabilityLaplaceSmoothing(const string& item) 
  *
  * @return entropy value.
  */
-double DiscreteDistribution::entropy() {
+double DiscreteDistribution::entropy() const{
     double total = 0.0, probability;
     for (auto &it : *this) {
         probability = it.second / sum;
@@ -185,7 +185,7 @@ double DiscreteDistribution::entropy() {
     return total;
 }
 
-int DiscreteDistribution::getIndex(const string& item) {
+int DiscreteDistribution::getIndex(const string& item) const{
     int i = 0;
     for (auto &it : *this) {
         if (it.first == item){
@@ -196,7 +196,7 @@ int DiscreteDistribution::getIndex(const string& item) {
     return -1;
 }
 
-vector<string> DiscreteDistribution::getItems() {
+vector<string> DiscreteDistribution::getItems() const{
     vector<string> result;
     for (auto &it : *this){
         result.push_back(it.first);
@@ -226,7 +226,7 @@ DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
     }
 }
 
-map<string, double> DiscreteDistribution::getProbabilityDistribution() {
+map<string, double> DiscreteDistribution::getProbabilityDistribution() const{
     map<string, double> result;
     for (auto &it : *this) {
         result.insert_or_assign(it.first, getProbability(it.first));

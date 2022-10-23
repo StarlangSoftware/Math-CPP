@@ -122,7 +122,7 @@ Matrix::Matrix(const Vector& v1, const Vector& v2) {
  *
  * @param fileName String input to write to file.
  */
-void Matrix::printToFile(const string& fileName) {
+void Matrix::printToFile(const string& fileName) const{
     ofstream outputStream(fileName, ios::out);
     for (int i = 0; i < row; i++) {
         outputStream << values[i].getValue(0);
@@ -141,7 +141,7 @@ void Matrix::printToFile(const string& fileName) {
  * @param colNo integer input for column number.
  * @return item at given index of values {@link array}.
  */
-double Matrix::getValue(int rowNo, int colNo) {
+double Matrix::getValue(int rowNo, int colNo) const{
     return values[rowNo].getValue(colNo);
 }
 
@@ -182,7 +182,7 @@ void Matrix::increment(int rowNo, int colNo) {
  *
  * @return row number.
  */
-int Matrix::getRow() {
+int Matrix::getRow() const{
     return row;
 }
 
@@ -192,7 +192,7 @@ int Matrix::getRow() {
  * @param _row integer input for row number.
  * @return Vector of values {@link array} at given row input.
  */
-Vector Matrix::getRow(int _row) {
+Vector Matrix::getRow(int _row) const{
     return values[_row];
 }
 
@@ -203,7 +203,7 @@ Vector Matrix::getRow(int _row) {
  * @param column integer input for column number.
  * @return Vector of given column number.
  */
-vector<double> Matrix::getColumn(int column) {
+vector<double> Matrix::getColumn(int column) const{
     vector<double> vector;
     vector.reserve(row);
     for (int i = 0; i < row; i++) {
@@ -217,7 +217,7 @@ vector<double> Matrix::getColumn(int column) {
  *
  * @return column variable.
  */
-int Matrix::getColumn() {
+int Matrix::getColumn() const{
     return col;
 }
 
@@ -320,7 +320,7 @@ void Matrix::subtract(const Matrix& m) {
  * @param v {@link Vector} type input.
  * @return Vector that holds the result.
  */
-Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) {
+Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) const{
     if (row != v.getSize()) {
         throw MatrixRowMismatch();
     }
@@ -343,7 +343,7 @@ Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) {
  * @param v {@link Vector} type input.
  * @return Vector that holds the result.
  */
-Vector Matrix::multiplyWithVectorFromRight(const Vector& v) {
+Vector Matrix::multiplyWithVectorFromRight(const Vector& v) const{
     if (col != v.getSize()) {
         throw new MatrixColumnMismatch();
     }
@@ -361,7 +361,7 @@ Vector Matrix::multiplyWithVectorFromRight(const Vector& v) {
  * @param columnNo Column number input.
  * @return summation of given column of values {@link array}.
  */
-double Matrix::columnSum(int columnNo) {
+double Matrix::columnSum(int columnNo) const{
     double sum = 0;
     for (int i = 0; i < row; i++) {
         sum += values[i].getValue(columnNo);
@@ -375,7 +375,7 @@ double Matrix::columnSum(int columnNo) {
  *
  * @return Vector that holds column sum.
  */
-Vector Matrix::sumOfRows() {
+Vector Matrix::sumOfRows() const{
     Vector result = Vector(0, 0.0);
     for (int i = 0; i < col; i++) {
         result.add(columnSum(i));
@@ -390,7 +390,7 @@ Vector Matrix::sumOfRows() {
  * @param rowNo Row number input.
  * @return summation of given row of values {@link array}.
  */
-double Matrix::rowSum(int rowNo) {
+double Matrix::rowSum(int rowNo) const{
     return values[rowNo].sum();
 }
 
@@ -403,7 +403,7 @@ double Matrix::rowSum(int rowNo) {
  * @param m Matrix type input.
  * @return result {@link Matrix}.
  */
-Matrix Matrix::multiply(const Matrix& m) {
+Matrix Matrix::multiply(const Matrix& m) const{
     int i, j, k;
     double sum;
     Matrix result(row, m.col);
@@ -430,7 +430,7 @@ Matrix Matrix::multiply(const Matrix& m) {
  * @param m Matrix type input.
  * @return result {@link Matrix}.
  */
-Matrix Matrix::elementProduct(const Matrix& m) {
+Matrix Matrix::elementProduct(const Matrix& m) const{
     int i, j;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -448,7 +448,7 @@ Matrix Matrix::elementProduct(const Matrix& m) {
  *
  * @return sum of the items of values {@link array}.
  */
-double Matrix::sumOfElements() {
+double Matrix::sumOfElements() const{
     int i;
     double sum = 0.0;
     for (i = 0; i < row; i++) {
@@ -462,7 +462,7 @@ double Matrix::sumOfElements() {
  *
  * @return sum of items at diagonal.
  */
-double Matrix::trace() {
+double Matrix::trace() const{
     int i;
     if (row != col){
         throw MatrixNotSquare();

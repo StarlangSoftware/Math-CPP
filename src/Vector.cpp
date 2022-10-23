@@ -66,7 +66,7 @@ Vector::Vector(double* values, unsigned long size) {
  *
  * @return result {@link Vector}.
  */
-Vector Vector::biased() {
+Vector Vector::biased() const{
     Vector result = Vector(0, 0.0);
     for (double value : values) {
         result.add(value);
@@ -120,7 +120,7 @@ void Vector::clear() {
  *
  * @return Sum of all elements in the vector.
  */
-double Vector::sumOfElements() {
+double Vector::sumOfElements() const{
     double total = 0;
     for (int i = 0; i < size; i++) {
         total += values[i];
@@ -135,7 +135,7 @@ double Vector::sumOfElements() {
  *
  * @return final maximum item's index.
  */
-unsigned long Vector::maxIndex() {
+unsigned long Vector::maxIndex() const{
     unsigned long index = 0;
     double max = values.at(0);
     for (unsigned long i = 1; i < size; i++) {
@@ -199,7 +199,7 @@ void Vector::reluDerivative() {
  * @param value integer input.
  * @return result Vector.
  */
-Vector Vector::skipVector(unsigned long mod, unsigned long value) {
+Vector Vector::skipVector(unsigned long mod, unsigned long value) const{
     Vector result = Vector(0, 0.0);
     unsigned long i = value;
     while (i < size) {
@@ -249,7 +249,7 @@ void Vector::subtract(const Vector& v) {
  * @param v Vector to find difference from values {@link vector}.
  * @return new {@link Vector} with result {@link array}.
  */
-Vector Vector::difference(const Vector& v) {
+Vector Vector::difference(const Vector& v) const{
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -268,7 +268,7 @@ Vector Vector::difference(const Vector& v) {
  * @param v Vector to find dot product.
  * @return double result.
  */
-double Vector::dotProduct(const Vector& v) {
+double Vector::dotProduct(const Vector& v) const{
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -285,7 +285,7 @@ double Vector::dotProduct(const Vector& v) {
  *
  * @return double result.
  */
-double Vector::dotProduct() {
+double Vector::dotProduct() const{
     double result = 0;
     for (int i = 0; i < size; i++) {
         result += values.at(i) * values.at(i);
@@ -301,7 +301,7 @@ double Vector::dotProduct() {
  * @param v Vector to find dot product.
  * @return Vector with result {@link array}.
  */
-Vector Vector::elementProduct(const Vector& v) {
+Vector Vector::elementProduct(const Vector& v) const{
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -341,7 +341,7 @@ void Vector::multiply(double value) {
  * @param value is used to multiply items of values {@link vector}.
  * @return Vector result.
  */
-Vector Vector::product(double value) {
+Vector Vector::product(double value) const{
     Vector result = Vector(0, 0.0);
     for (unsigned long i = 0; i < size; i++) {
         result.add(values.at(i) * value);
@@ -384,7 +384,7 @@ double Vector::l2Norm() const{
  * @param v Vector input.
  * @return dotProduct(v) / l2Norm() / v.l2Norm().
  */
-double Vector::cosineSimilarity(const Vector& v) {
+double Vector::cosineSimilarity(const Vector& v) const{
     if (size != v.size) {
         throw VectorSizeMismatch();
     }
@@ -435,7 +435,7 @@ unsigned long Vector::getSize() const {
  *
  * @return sum of the values {@link vector}.
  */
-double Vector::sum() {
+double Vector::sum() const{
     double sum = 0.0;
     for (int i = 0; i < size; i++) {
         sum += values.at(i);

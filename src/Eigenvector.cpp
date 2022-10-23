@@ -23,6 +23,6 @@ Eigenvector::Eigenvector(double eigenValue, const vector<double>& values) : Vect
  *
  * @return eigenValue variable.
  */
-double Eigenvector::getEigenValue() {
+double Eigenvector::getEigenValue() const{
     return eigenValue;
 }
