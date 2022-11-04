@@ -15,14 +15,13 @@ class Matrix {
 private:
     int row;
     int col;
-    vector<Vector> values;
+    double** values;
 public:
     explicit Matrix(const string& filename);
     Matrix(int row, int col);
     Matrix(int row, int col, double min, double max, default_random_engine randomEngine);
     explicit Matrix(int size);
     Matrix(const Vector& v1, const Vector& v2);
-    explicit Matrix(ifstream& inputFile);
     Matrix clone();
     void printToFile(const string& fileName) const;
     double getValue(int rowNo, int colNo) const;
@@ -55,7 +54,6 @@ public:
     void inverse();
     Matrix choleskyDecomposition();
     vector<Eigenvector> characteristics();
-    void serialize(ostream& outputFile);
 private:
     void rotate(double s, double tau, int i, int j, int k, int l);
 };

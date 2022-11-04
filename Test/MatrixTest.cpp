@@ -18,7 +18,7 @@ TEST_CASE("MatrixTest-testColumnWiseNormalize") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     small.columnWiseNormalize();
     REQUIRE(3 == small.sumOfElements());
     large.columnWiseNormalize();
@@ -76,7 +76,7 @@ TEST_CASE("MatrixTest-testDivideByConstant") {
 TEST_CASE("MatrixTest-testAdd") {
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     random.add(identity);
     REQUIRE_THAT(originalSum + 100, Catch::Matchers::WithinAbs(random.sumOfElements(), 0.001));
 }
@@ -96,7 +96,7 @@ TEST_CASE("MatrixTest-testAddVector") {
 TEST_CASE("MatrixTest-testSubtract") {
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     random.subtract(identity);
     REQUIRE_THAT(originalSum - 100, Catch::Matchers::WithinAbs(random.sumOfElements(), 0.001));
 }
@@ -166,7 +166,7 @@ TEST_CASE("MatrixTest-testColumnSum") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     REQUIRE(3 == small.columnSum(random() % 3));
     REQUIRE(1000 == large.columnSum(random() % 1000));
     REQUIRE(1 == identity.columnSum(random() % 100));
@@ -185,7 +185,7 @@ TEST_CASE("MatrixTest-testSumOfRows") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.sumOfRows().sumOfElements());
@@ -207,7 +207,7 @@ TEST_CASE("MatrixTest-testRowSum") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     REQUIRE(3 == small.rowSum(random() % 3));
     REQUIRE(1000 == large.rowSum(random() % 1000));
     REQUIRE(1 == identity.rowSum(random() % 100));
@@ -226,7 +226,7 @@ TEST_CASE("MatrixTest-testMultiply") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     Matrix result = small.multiply(small);
@@ -252,7 +252,7 @@ TEST_CASE("MatrixTest-testElementProduct") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     Matrix result = small.elementProduct(small);
     REQUIRE(9 == result.sumOfElements());
@@ -275,7 +275,7 @@ TEST_CASE("MatrixTest-testSumOfElements") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.sumOfRows().sumOfElements());
@@ -297,7 +297,7 @@ TEST_CASE("MatrixTest-testTrace") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     REQUIRE(3 == small.trace());
     REQUIRE(1000 == large.trace());
     REQUIRE(100 == identity.trace());
@@ -316,7 +316,7 @@ TEST_CASE("MatrixTest-testTranspose") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     REQUIRE(9 == small.transpose().sumOfElements());
@@ -338,7 +338,7 @@ TEST_CASE("MatrixTest-testIsSymmetric") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     REQUIRE_FALSE(!small.isSymmetric());
     REQUIRE_FALSE(!large.isSymmetric());
@@ -359,7 +359,7 @@ TEST_CASE("MatrixTest-testDeterminant") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     REQUIRE(0 == small.determinant());
     REQUIRE(0 == large.determinant());
     REQUIRE(1 == identity.determinant());
@@ -378,7 +378,7 @@ TEST_CASE("MatrixTest-testInverse") {
             large.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     double originalSum = random.sumOfElements();
     identity.inverse();
@@ -395,7 +395,7 @@ TEST_CASE("MatrixTest-testCharacteristics") {
             small.setValue(i, j, 1.0);
         }
     }
-    Matrix identity = Matrix(100);
+    auto identity = Matrix(100);
     Matrix medium = Matrix(100, 100);
     for (int i = 0; i < 100; i++){
         for (int j = 0; j < 100; j++){
