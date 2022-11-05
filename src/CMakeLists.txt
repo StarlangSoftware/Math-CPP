@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+set(CMAKE_CXX_FLAGS "-O3")
 
 add_library(Math src/Distribution.cpp src/Distribution.h src/DeterminantZero.cpp src/DeterminantZero.h src/VectorSizeMismatch.cpp src/VectorSizeMismatch.h src/MatrixColumnMismatch.cpp src/MatrixColumnMismatch.h src/MatrixDimensionMismatch.cpp src/MatrixDimensionMismatch.h src/MatrixNotPositiveDefinite.cpp src/MatrixNotPositiveDefinite.h src/MatrixNotSymmetric.cpp src/MatrixNotSymmetric.h src/MatrixRowColumnMismatch.cpp src/MatrixRowColumnMismatch.h src/MatrixRowMismatch.cpp src/MatrixRowMismatch.h src/Vector.cpp src/Vector.h src/Eigenvector.cpp src/Eigenvector.h src/DiscreteDistribution.cpp src/DiscreteDistribution.h src/Matrix.cpp src/Matrix.h src/MatrixNotSquare.cpp src/MatrixNotSquare.h)
 
