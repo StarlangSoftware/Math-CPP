@@ -121,7 +121,7 @@ Matrix::Matrix(const Vector& v1, const Vector& v2) {
     col = v2.getSize();
     values = new double*[row];
     for (int i = 0; i < row; i++){
-        values[i] = new double[row];
+        values[i] = new double[col];
     }
     for (int i = 0; i < v1.getSize(); i++) {
         for (int j = 0; j < v2.getSize(); j++) {
