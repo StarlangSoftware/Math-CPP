@@ -822,3 +822,25 @@ Matrix Matrix::clone() {
     }
     return result;
 }
+
+Matrix Matrix::sum(const Matrix &m) const{
+    int i, j;
+    Matrix result = Matrix(row, col);
+    for (i = 0; i < row; i++) {
+        for (j = 0; j < col; j++) {
+            result.values[i][j] = values[i][j] + m.values[i][j];
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::difference(const Matrix &m) const {
+    int i, j;
+    Matrix result = Matrix(row, col);
+    for (i = 0; i < row; i++) {
+        for (j = 0; j < col; j++) {
+            result.values[i][j] = values[i][j] - m.values[i][j];
+        }
+    }
+    return result;
+}

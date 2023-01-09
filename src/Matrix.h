@@ -36,8 +36,10 @@ public:
     void multiplyWithConstant(double constant);
     void divideByConstant(double constant);
     void add(const Matrix& m);
+    Matrix sum(const Matrix& m) const;
     void add(int rowNo, const Vector& v);
     void subtract(const Matrix& m);
+    Matrix difference(const Matrix& m) const;
     Vector multiplyWithVectorFromLeft(const Vector& v) const;
     Vector multiplyWithVectorFromRight(const Vector& v) const;
     double columnSum(int columnNo) const;
