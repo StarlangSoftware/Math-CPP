@@ -70,17 +70,12 @@ Matrix::Matrix(int row, int col) {
  */
 Matrix::Matrix(int row, int col, double min, double max, default_random_engine randomEngine) {
     values = new double*[row];
-    for (int i = 0; i < row; i++){
-        values[i] = new double[col];
-        for (int j = 0; j < col; j++){
-            values[i][j] = 0;
-        }
-    }
     this->row = row;
     this->col = col;
     uniform_real_distribution <> distribution (min, max);
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
+    for (int i = 0; i < row; i++){
+        values[i] = new double[col];
+        for (int j = 0; j < col; j++){
             values[i][j] = distribution(randomEngine);
         }
     }
@@ -125,7 +120,7 @@ Matrix::Matrix(const Vector& v1, const Vector& v2) {
     }
     for (int i = 0; i < v1.getSize(); i++) {
         for (int j = 0; j < v2.getSize(); j++) {
-            setValue(i, j, v1.getValue(i) * v2.getValue(j));
+            values[i][j] = v1.getValue(i) * v2.getValue(j);
         }
     }
 }

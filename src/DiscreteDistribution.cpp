@@ -42,6 +42,7 @@ void DiscreteDistribution::removeItem(const string& item) {
         if (find(item)->second == 0) {
             erase(item);
         }
+        sum--;
     }
 }
 
