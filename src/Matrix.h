@@ -18,6 +18,7 @@ private:
     double** values;
 public:
     explicit Matrix(const string& filename);
+    explicit Matrix(ifstream& inputStream);
     Matrix(int row, int col);
     Matrix(int row, int col, double min, double max, default_random_engine randomEngine);
     explicit Matrix(int size);

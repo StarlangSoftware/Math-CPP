@@ -39,6 +39,20 @@ Matrix::Matrix(const string& fileName) {
     inputStream.close();
 }
 
+Matrix::Matrix(ifstream &inputStream) {
+    double value;
+    inputStream >> row;
+    inputStream >> col;
+    values = new double*[row];
+    for (int i = 0; i < row; i++) {
+        values[i] = new double[col];
+        for (int j = 0; j < col; j++) {
+            inputStream >> value;
+            values[i][j] = value;
+        }
+    }
+}
+
 /**
  * Another constructor of {@link Matrix} class which takes row and column numbers as inputs and creates new values
  * {@link array} with given parameters.

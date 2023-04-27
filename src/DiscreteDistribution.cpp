@@ -218,11 +218,12 @@ DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
     int size;
     string item;
     int count;
-    inputFile >> sum;
+    sum = 0;
     inputFile >> size;
     for (int i = 0; i < size; i++){
         inputFile >> item;
         inputFile >> count;
+        sum += count;
         emplace(item, count);
     }
 }
