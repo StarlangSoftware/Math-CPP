@@ -8,10 +8,10 @@
 #include "VectorSizeMismatch.h"
 
 /**
- * A constructor of {@link Vector} class which takes an {@link vector} values as an input. Then, initializes
- * values {@link vector} and size variable with given input and ts size.
+ * A constructor of Vector class which takes an vector values as an input. Then, initializes
+ * values vector and size variable with given input and ts size.
  *
- * @param values {@link vector} input.
+ * @param values vector input.
  */
 Vector::Vector(const vector<double>& values) {
     this->values = values;
@@ -19,11 +19,11 @@ Vector::Vector(const vector<double>& values) {
 }
 
 /**
- * Another constructor of {@link Vector} class which takes integer size and double x as inputs. Then, initializes size
- * variable with given size input and creates new values {@link vector} and adds given input x to values {@link vector}.
+ * Another constructor of Vector class which takes integer size and double x as inputs. Then, initializes size
+ * variable with given size input and creates new values vector and adds given input x to values vector.
  *
- * @param size {@link vector} size.
- * @param x    item to add values {@link vector}.
+ * @param size vector size.
+ * @param x    item to add values vector.
  */
 Vector::Vector(unsigned long size, double x) {
     this->size = size;
@@ -31,13 +31,13 @@ Vector::Vector(unsigned long size, double x) {
 }
 
 /**
- * Another constructor of {@link Vector} class which takes integer size, integer index and double x as inputs. Then, initializes size
- * variable with given size input and creates new values {@link vector} and adds 0.0 to values {@link vector}.
- * Then, sets the item of values {@link vector} at given index as given input x.
+ * Another constructor of Vector class which takes integer size, integer index and double x as inputs. Then, initializes size
+ * variable with given size input and creates new values vector and adds 0.0 to values vector.
+ * Then, sets the item of values vector at given index as given input x.
  *
- * @param size  {@link vector} size.
+ * @param size  vector size.
  * @param index to set a particular item.
- * @param x     item to add values {@link vector}'s given index.
+ * @param x     item to add values vector's given index.
  */
 Vector::Vector(unsigned long size, int index, double x) {
     this->size = size;
@@ -46,11 +46,11 @@ Vector::Vector(unsigned long size, int index, double x) {
 }
 
 /**
- * Another constructor of {@link Vector} class which takes double values {@link array} as an input.
- * It creates new values {@link vector} and adds given input values {@link array}'s each item to the values {@link vector}.
- * Then, initializes size with given values input {@link array}'s length.
+ * Another constructor of Vector class which takes double values array as an input.
+ * It creates new values vector and adds given input values array's each item to the values vector.
+ * Then, initializes size with given values input array's length.
  *
- * @param values double {@link array} input.
+ * @param values double array input.
  */
 Vector::Vector(double* values, unsigned long size) {
     this->values.reserve(size);
@@ -61,10 +61,10 @@ Vector::Vector(double* values, unsigned long size) {
 }
 
 /**
- * The biased method creates a {@link Vector} result, add adds each item of values {@link vector} into the result Vector.
- * Then, insert 1.0 to 0th position and return result {@link Vector}.
+ * The biased method creates a Vector result, add adds each item of values vector into the result Vector.
+ * Then, insert 1.0 to 0th position and return result Vector.
  *
- * @return result {@link Vector}.
+ * @return result Vector.
  */
 Vector Vector::biased() const{
     Vector result = Vector(0, 0.0);
@@ -76,9 +76,9 @@ Vector Vector::biased() const{
 }
 
 /**
- * The add method adds given input to the values {@link vector} and increments the size variable by one.
+ * The add method adds given input to the values vector and increments the size variable by one.
  *
- * @param x double input to add values {@link vector}.
+ * @param x double input to add values vector.
  */
 void Vector::add(double x) {
     values.push_back(x);
@@ -86,10 +86,10 @@ void Vector::add(double x) {
 }
 
 /**
- * The insert method puts given input to the given index of values {@link vector} and increments the size variable by one.
+ * The insert method puts given input to the given index of values vector and increments the size variable by one.
  *
  * @param pos index to insert input.
- * @param x   input to insert to given index of values {@link vector}.
+ * @param x   input to insert to given index of values vector.
  */
 void Vector::insert(int pos, double x) {
     values.insert(values.begin() + pos, x);
@@ -97,9 +97,9 @@ void Vector::insert(int pos, double x) {
 }
 
 /**
- * The remove method deletes the item at given input position of values {@link vector} and decrements the size variable by one.
+ * The remove method deletes the item at given input position of values vector and decrements the size variable by one.
  *
- * @param pos index to remove from values {@link vector}.
+ * @param pos index to remove from values vector.
  */
 void Vector::remove(int pos) {
     values.erase(values.begin() + pos);
@@ -107,7 +107,7 @@ void Vector::remove(int pos) {
 }
 
 /**
- * The clear method sets all the elements of values {@link vector} to 0.0.
+ * The clear method sets all the elements of values vector to 0.0.
  */
 void Vector::clear() {
     for (double & value : values) {
@@ -129,7 +129,7 @@ double Vector::sumOfElements() const{
 }
 
 /**
- * The maxIndex method gets the first item of values {@link ArrayList} as maximum item, then it loops through the indices
+ * The maxIndex method gets the first item of values ArrayList as maximum item, then it loops through the indices
  * and if a greater value than the current maximum item comes, it updates the maximum item and returns the final
  * maximum item's index.
  *
@@ -148,7 +148,7 @@ unsigned long Vector::maxIndex() const{
 }
 
 /**
- * The sigmoid method loops through the values {@link vector} and sets each ith item with sigmoid function, i.e
+ * The sigmoid method loops through the values vector and sets each ith item with sigmoid function, i.e
  * 1 / (1 + exp(-values.get(i))), i ranges from 0 to size.
  */
 void Vector::sigmoid() {
@@ -158,7 +158,7 @@ void Vector::sigmoid() {
 }
 
 /**
- * The tanh method loops through the values {@link ArrayList} and sets each ith item with tanh function.
+ * The tanh method loops through the values ArrayList and sets each ith item with tanh function.
  */
 void Vector::tanh() {
     for (unsigned long i = 0; i < size; i++) {
@@ -167,7 +167,7 @@ void Vector::tanh() {
 }
 
 /**
- * The relu method loops through the values {@link ArrayList} and sets each ith item with relu function.
+ * The relu method loops through the values ArrayList and sets each ith item with relu function.
  */
 void Vector::relu() {
     for (unsigned long i = 0; i < size; i++) {
@@ -178,7 +178,7 @@ void Vector::relu() {
 }
 
 /**
- * The reluDerivative method loops through the values {@link ArrayList} and sets each ith item with the derivative of
+ * The reluDerivative method loops through the values ArrayList and sets each ith item with the derivative of
  * relu function.
  */
 void Vector::reluDerivative() {
@@ -193,7 +193,7 @@ void Vector::reluDerivative() {
 
 /**
  * The skipVector method takes a mod and a value as inputs. It creates a new result Vector, and assigns given input value to i.
- * While i is less than the size, it adds the ith item of values {@link vector} to the result and increments i by given mod input.
+ * While i is less than the size, it adds the ith item of values vector to the result and increments i by given mod input.
  *
  * @param mod   integer input.
  * @param value integer input.
@@ -210,8 +210,8 @@ Vector Vector::skipVector(unsigned long mod, unsigned long value) const{
 }
 
 /**
- * The add method takes a {@link Vector} v as an input. It sums up the corresponding elements of both given vector's
- * values {@link vector} and values {@link vector} and puts result back to the values {@link vector}.
+ * The add method takes a Vector v as an input. It sums up the corresponding elements of both given vector's
+ * values vector and values vector and puts result back to the values vector.
  * If their sizes do not match, it throws a VectorSizeMismatch exception.
  *
  * @param v Vector to add.
@@ -226,11 +226,11 @@ void Vector::add(const Vector& v) {
 }
 
 /**
- * The subtract method takes a {@link Vector} v as an input. It subtracts the corresponding elements of given vector's
- * values {@link vector} from values {@link vector} and puts result back to the values {@link vector}.
+ * The subtract method takes a Vector v as an input. It subtracts the corresponding elements of given vector's
+ * values vector from values vector and puts result back to the values vector.
  * If their sizes do not match, it throws a VectorSizeMismatch exception.
  *
- * @param v Vector to subtract from values {@link vector}.
+ * @param v Vector to subtract from values vector.
  */
 void Vector::subtract(const Vector& v) {
     if (size != v.size) {
@@ -242,12 +242,12 @@ void Vector::subtract(const Vector& v) {
 }
 
 /**
- * The difference method takes a {@link Vector} v as an input. It creates a new double {@link array} result, then
- * subtracts the corresponding elements of given vector's values {@link vector} from values {@link vector} and puts
- * result back to the result {@link array}. If their sizes do not match, it throws a VectorSizeMismatch exception.
+ * The difference method takes a Vector v as an input. It creates a new double array result, then
+ * subtracts the corresponding elements of given vector's values vector from values vector and puts
+ * result back to the result array. If their sizes do not match, it throws a VectorSizeMismatch exception.
  *
- * @param v Vector to find difference from values {@link vector}.
- * @return new {@link Vector} with result {@link array}.
+ * @param v Vector to find difference from values vector.
+ * @return new Vector with result array.
  */
 Vector Vector::difference(const Vector& v) const{
     if (size != v.size) {
@@ -261,8 +261,8 @@ Vector Vector::difference(const Vector& v) const{
 }
 
 /**
- * The dotProduct method takes a {@link Vector} v as an input. It creates a new double variable result, then
- * multiplies the corresponding elements of given vector's values {@link vector} with values {@link vector} and assigns
+ * The dotProduct method takes a Vector v as an input. It creates a new double variable result, then
+ * multiplies the corresponding elements of given vector's values vector with values vector and assigns
  * the multiplication to the result. If their sizes do not match, it throws a VectorSizeMismatch exception.
  *
  * @param v Vector to find dot product.
@@ -280,7 +280,7 @@ double Vector::dotProduct(const Vector& v) const{
 }
 
 /**
- * The dotProduct method creates a new double variable result, then squares the elements of values {@link vector} and assigns
+ * The dotProduct method creates a new double variable result, then squares the elements of values vector and assigns
  * the accumulation to the result.
  *
  * @return double result.
@@ -294,12 +294,12 @@ double Vector::dotProduct() const{
 }
 
 /**
- * The elementProduct method takes a {@link Vector} v as an input. It creates a new double {@link array} result, then
- * multiplies the corresponding elements of given vector's values {@link vector} with values {@link ArrayList} and assigns
- * the multiplication to the result {@link array}. If their sizes do not match, it throws a VectorSizeMismatch exception.
+ * The elementProduct method takes a Vector v as an input. It creates a new double array result, then
+ * multiplies the corresponding elements of given vector's values vector with values ArrayList and assigns
+ * the multiplication to the result array. If their sizes do not match, it throws a VectorSizeMismatch exception.
  *
  * @param v Vector to find dot product.
- * @return Vector with result {@link array}.
+ * @return Vector with result array.
  */
 Vector Vector::elementProduct(const Vector& v) const{
     if (size != v.size) {
@@ -313,9 +313,9 @@ Vector Vector::elementProduct(const Vector& v) const{
 }
 
 /**
- * The divide method takes a double value as an input and divides each item of values {@link vector} with given value.
+ * The divide method takes a double value as an input and divides each item of values vector with given value.
  *
- * @param value is used to divide items of values {@link vector}.
+ * @param value is used to divide items of values vector.
  */
 void Vector::divide(double value) {
     for (unsigned long i = 0; i < size; i++) {
@@ -324,9 +324,9 @@ void Vector::divide(double value) {
 }
 
 /**
- * The multiply method takes a double value as an input and multiplies each item of values {@link vector} with given value.
+ * The multiply method takes a double value as an input and multiplies each item of values vector with given value.
  *
- * @param value is used to multiply items of values {@link vector}.
+ * @param value is used to multiply items of values vector.
  */
 void Vector::multiply(double value) {
     for (unsigned long i = 0; i < size; i++) {
@@ -335,10 +335,10 @@ void Vector::multiply(double value) {
 }
 
 /**
- * The product method takes a double value as an input and creates a new result {@link Vector}, then multiplies each
- * item of values {@link vector} with given value and adds to the result {@link Vector}.
+ * The product method takes a double value as an input and creates a new result Vector, then multiplies each
+ * item of values vector with given value and adds to the result Vector.
  *
- * @param value is used to multiply items of values {@link vector}.
+ * @param value is used to multiply items of values vector.
  * @return Vector result.
  */
 Vector Vector::product(double value) const{
@@ -350,7 +350,7 @@ Vector Vector::product(double value) const{
 }
 
 /**
- * The l1Normalize method is used to apply Least Absolute Errors, it accumulates items of values {@link vector} and sets
+ * The l1Normalize method is used to apply Least Absolute Errors, it accumulates items of values vector and sets
  * each item by dividing it by the summation value.
  */
 void Vector::l1Normalize() {
@@ -364,7 +364,7 @@ void Vector::l1Normalize() {
 }
 
 /**
- * The l2Norm method is used to apply Least Squares, it accumulates second power of each items of values {@link vector}
+ * The l2Norm method is used to apply Least Squares, it accumulates second power of each items of values vector
  * and returns the square root of this summation.
  *
  * @return square root of this summation.
@@ -378,8 +378,8 @@ double Vector::l2Norm() const{
 }
 
 /**
- * The cosineSimilarity method takes a {@link Vector} v as an input and returns the result of dotProduct(v) / l2Norm() / v.l2Norm().
- * If sizes do not match it throws a {@link VectorSizeMismatch} exception.
+ * The cosineSimilarity method takes a Vector v as an input and returns the result of dotProduct(v) / l2Norm() / v.l2Norm().
+ * If sizes do not match it throws a VectorSizeMismatch exception.
  *
  * @param v Vector input.
  * @return dotProduct(v) / l2Norm() / v.l2Norm().
@@ -392,7 +392,7 @@ double Vector::cosineSimilarity(const Vector& v) const{
 }
 
 /**
- * Getter for the item at given index of values {@link vector}.
+ * Getter for the item at given index of values vector.
  *
  * @param index used to get an item.
  * @return the item at given index.
@@ -402,7 +402,7 @@ double Vector::getValue(unsigned long index) const{
 }
 
 /**
- * Setter for the setting the value at given index of values {@link vector}.
+ * Setter for the setting the value at given index of values vector.
  *
  * @param index to set.
  * @param value is used to set the given index
@@ -412,7 +412,7 @@ void Vector::setValue(unsigned long index, double value) {
 }
 
 /**
- * The addValue method adds the given value to the item at given index of values {@link vector}.
+ * The addValue method adds the given value to the item at given index of values vector.
  *
  * @param index to add the given value.
  * @param value value to add to given index.
@@ -422,18 +422,18 @@ void Vector::addValue(unsigned long index, double value) {
 }
 
 /**
- * The size method returns the size of the values {@link vector}.
+ * The size method returns the size of the values vector.
  *
- * @return size of the values {@link vector}.
+ * @return size of the values vector.
  */
 unsigned long Vector::getSize() const {
     return size;
 }
 
 /**
- * The sum method returns the sum of the values {@link vector}.
+ * The sum method returns the sum of the values vector.
  *
- * @return sum of the values {@link vector}.
+ * @return sum of the values vector.
  */
 double Vector::sum() const{
     double sum = 0.0;

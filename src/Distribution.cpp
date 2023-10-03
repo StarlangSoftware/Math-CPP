@@ -20,10 +20,10 @@ double Distribution::ex(double x) {
 }
 
 /**
- * The beta method takes a double {@link array} x as an input. It loops through x and accumulates
+ * The beta method takes a double array x as an input. It loops through x and accumulates
  * the value of gammaLn(x), also it sums up the items of x and returns (accumulated result - gammaLn of this summation).
  *
- * @param x double {@link array} input.
+ * @param x double array input.
  * @param size size of x.
  * @return gammaLn(sum).
  */

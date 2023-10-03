@@ -7,12 +7,12 @@
 #include "Eigenvector.h"
 
 /**
- * A constructor of {@link Eigenvector} which takes a double eigenValue and an {@link vector} values as inputs.
- * It calls its super class {@link Vector} with values {@link vector} and initializes eigenValue variable with its
+ * A constructor of Eigenvector which takes a double eigenValue and an vector values as inputs.
+ * It calls its super class Vector with values vector and initializes eigenValue variable with its
  * eigenValue input.
  *
  * @param eigenValue double input.
- * @param values     {@link vector} input.
+ * @param values     vector input.
  */
 Eigenvector::Eigenvector(double eigenValue, const vector<double>& values) : Vector(values) {
     this->eigenValue = eigenValue;

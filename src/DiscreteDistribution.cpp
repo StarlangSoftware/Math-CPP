@@ -10,7 +10,7 @@
 #include "DiscreteDistribution.h"
 
 /**
- * A constructor of {@link DiscreteDistribution} class which calls its super class.
+ * A constructor of DiscreteDistribution class which calls its super class.
  */
 DiscreteDistribution::DiscreteDistribution() : map() {
 }
@@ -47,11 +47,11 @@ void DiscreteDistribution::removeItem(const string& item) {
 }
 
 /**
- * The addDistribution method takes a {@link DiscreteDistribution} as an input and loops through the entries in this distribution
+ * The addDistribution method takes a DiscreteDistribution as an input and loops through the entries in this distribution
  * and if this map contains a mapping for the entry it puts the entry with its value + entry, else it puts entry with its value.
  * It also accumulates the values of entries and assigns to the sum variable.
  *
- * @param distribution {@link DiscreteDistribution} type input.
+ * @param distribution DiscreteDistribution type input.
  */
 void DiscreteDistribution::addDistribution(const DiscreteDistribution& distribution) {
     for (auto &it : distribution) {
@@ -65,11 +65,11 @@ void DiscreteDistribution::addDistribution(const DiscreteDistribution& distribut
 }
 
 /**
- * The removeDistribution method takes a {@link DiscreteDistribution} as an input and loops through the entries in this distribution
+ * The removeDistribution method takes a DiscreteDistribution as an input and loops through the entries in this distribution
  * and if this map contains a mapping for the entry it puts the entry with its key - value, else it removes the entry.
  * It also decrements the value of entry from sum and assigns to the sum variable.
  *
- * @param distribution {@link DiscreteDistribution} type input.
+ * @param distribution DiscreteDistribution type input.
  */
 void DiscreteDistribution::removeDistribution(const DiscreteDistribution& distribution) {
     for (auto &it : distribution) {
@@ -120,10 +120,10 @@ string DiscreteDistribution::getMaxItem() const{
 }
 
 /**
- * Another getMaxItem method which takes an {@link vector} of Strings. It loops through the items in this {@link vector}
+ * Another getMaxItem method which takes an vector of Strings. It loops through the items in this vector
  * and gets the item with maximum value.
  *
- * @param includeTheseOnly {@link vector} of Strings.
+ * @param includeTheseOnly vector of Strings.
  * @return the item with maximum value.
  */
 string DiscreteDistribution::getMaxItem(const vector<string>& includeTheseOnly) const{
