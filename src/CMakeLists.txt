@@ -2,11 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 project(Math)
 
 set(CMAKE_CXX_STANDARD 20)
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
 set(CMAKE_CXX_FLAGS "-O3")
 
-add_library(Math src/Distribution.cpp src/Distribution.h src/DeterminantZero.cpp src/DeterminantZero.h src/VectorSizeMismatch.cpp src/VectorSizeMismatch.h src/MatrixColumnMismatch.cpp src/MatrixColumnMismatch.h src/MatrixDimensionMismatch.cpp src/MatrixDimensionMismatch.h src/MatrixNotPositiveDefinite.cpp src/MatrixNotPositiveDefinite.h src/MatrixNotSymmetric.cpp src/MatrixNotSymmetric.h src/MatrixRowColumnMismatch.cpp src/MatrixRowColumnMismatch.h src/MatrixRowMismatch.cpp src/MatrixRowMismatch.h src/Vector.cpp src/Vector.h src/Eigenvector.cpp src/Eigenvector.h src/DiscreteDistribution.cpp src/DiscreteDistribution.h src/Matrix.cpp src/Matrix.h src/MatrixNotSquare.cpp src/MatrixNotSquare.h)
-
-add_executable(Test src/Distribution.cpp src/Distribution.h src/DeterminantZero.cpp src/DeterminantZero.h src/VectorSizeMismatch.cpp src/VectorSizeMismatch.h src/MatrixColumnMismatch.cpp src/MatrixColumnMismatch.h src/MatrixDimensionMismatch.cpp src/MatrixDimensionMismatch.h src/MatrixNotPositiveDefinite.cpp src/MatrixNotPositiveDefinite.h src/MatrixNotSymmetric.cpp src/MatrixNotSymmetric.h src/MatrixRowColumnMismatch.cpp src/MatrixRowColumnMismatch.h src/MatrixRowMismatch.cpp src/MatrixRowMismatch.h src/Vector.cpp src/Vector.h src/Eigenvector.cpp src/Eigenvector.h src/DiscreteDistribution.cpp src/DiscreteDistribution.h src/Matrix.cpp src/Matrix.h src/MatrixNotSquare.cpp src/MatrixNotSquare.h Test/catch.hpp Test/DistributionTest.cpp Test/DiscreteDistributionTest.cpp Test/VectorTest.cpp Test/MatrixTest.cpp)
+add_library(Math Distribution.cpp Distribution.h DeterminantZero.cpp DeterminantZero.h VectorSizeMismatch.cpp VectorSizeMismatch.h MatrixColumnMismatch.cpp MatrixColumnMismatch.h MatrixDimensionMismatch.cpp MatrixDimensionMismatch.h MatrixNotPositiveDefinite.cpp MatrixNotPositiveDefinite.h MatrixNotSymmetric.cpp MatrixNotSymmetric.h MatrixRowColumnMismatch.cpp MatrixRowColumnMismatch.h MatrixRowMismatch.cpp MatrixRowMismatch.h Vector.cpp Vector.h Eigenvector.cpp Eigenvector.h DiscreteDistribution.cpp DiscreteDistribution.h Matrix.cpp Matrix.h MatrixNotSquare.cpp MatrixNotSquare.h)
