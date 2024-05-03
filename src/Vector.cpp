@@ -443,6 +443,11 @@ double Vector::sum() const{
     return sum;
 }
 
+/**
+ * Swaps two elements with the give indexes.
+ * @param index1 First index
+ * @param index2 Second index
+ */
 void Vector::swap(int index1, int index2) {
     double tmp;
     tmp = values.at(index1);
@@ -450,6 +455,10 @@ void Vector::swap(int index1, int index2) {
     values[index2] = tmp;
 }
 
+/**
+ * Writes the vector to an output file.
+ * @param outputFile Output file.
+ */
 void Vector::serialize(ostream &outputFile) {
     outputFile << values.size() << " ";
     for (double value : values){
@@ -458,6 +467,10 @@ void Vector::serialize(ostream &outputFile) {
     outputFile << "\n";
 }
 
+/**
+ * Reads the vector from an input file.
+ * @param inputFile Input file.
+ */
 Vector::Vector(ifstream &inputFile) {
     inputFile >> size;
     for (int i = 0; i < size; i++){

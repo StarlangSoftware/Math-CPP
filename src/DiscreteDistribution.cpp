@@ -186,6 +186,12 @@ double DiscreteDistribution::entropy() const{
     return total;
 }
 
+/**
+ * The getIndex method takes an item as an input and returns the index of given item.
+ *
+ * @param item to search for index.
+ * @return index of given item.
+ */
 int DiscreteDistribution::getIndex(const string& item) const{
     int i = 0;
     for (auto &it : *this) {
@@ -197,6 +203,10 @@ int DiscreteDistribution::getIndex(const string& item) const{
     return -1;
 }
 
+/**
+ * Returns the items in the distribution as a vector
+ * @return Items in the distribution as a vector
+ */
 vector<string> DiscreteDistribution::getItems() const{
     vector<string> result;
     for (auto &it : *this){
@@ -205,6 +215,10 @@ vector<string> DiscreteDistribution::getItems() const{
     return result;
 }
 
+/**
+ * Write the distribution to an output file.
+ * @param outputFile OUtput file
+ */
 void DiscreteDistribution::serialize(ostream &outputFile) {
     outputFile << sum << "\n";
     outputFile << this->size() << "\n";
@@ -214,6 +228,10 @@ void DiscreteDistribution::serialize(ostream &outputFile) {
     }
 }
 
+/**
+ * Reads the distribution from an input file
+ * @param inputFile Input file
+ */
 DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
     int size;
     string item;
@@ -228,6 +246,10 @@ DiscreteDistribution::DiscreteDistribution(ifstream &inputFile) {
     }
 }
 
+/**
+ * Returns the distribution as a probability distribution
+ * @return Probability distribution
+ */
 map<string, double> DiscreteDistribution::getProbabilityDistribution() const{
     map<string, double> result;
     for (auto &it : *this) {

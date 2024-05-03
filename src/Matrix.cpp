@@ -39,6 +39,10 @@ Matrix::Matrix(const string& fileName) {
     inputStream.close();
 }
 
+/**
+ * Reads the matrix from an input file
+ * @param inputStream Input file
+ */
 Matrix::Matrix(ifstream &inputStream) {
     double value;
     inputStream >> row;
@@ -822,6 +826,10 @@ vector<Eigenvector> Matrix::characteristics() {
     return result;
 }
 
+/**
+ * Constructs a clone of the object
+ * @return Clone of the matrix object
+ */
 Matrix Matrix::clone() {
     Matrix result = Matrix(row, col);
     for (int i = 0; i < row; i++){
@@ -832,6 +840,12 @@ Matrix Matrix::clone() {
     return result;
 }
 
+/**
+ * The add method takes a Matrix as an input and sums values array with the
+ * corresponding items of given Matrix and returns as a new Matrix.
+ * @param m Matrix to be added.
+ * @return Sum of current matrix and m.
+ */
 Matrix Matrix::sum(const Matrix &m) const{
     int i, j;
     Matrix result = Matrix(row, col);
@@ -843,6 +857,13 @@ Matrix Matrix::sum(const Matrix &m) const{
     return result;
 }
 
+/**
+ * The difference method takes a Matrix as an input and subtracts from values array the
+ * corresponding items of given Matrix.
+ *
+ * @param m Matrix type input.
+ * @return Difference between current matrix and m.
+ */
 Matrix Matrix::difference(const Matrix &m) const {
     int i, j;
     Matrix result = Matrix(row, col);
