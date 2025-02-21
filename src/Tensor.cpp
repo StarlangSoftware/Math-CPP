@@ -3,6 +3,10 @@
 //
 
 #include "Tensor.h"
+#include <stdexcept>
+#include <numeric>
+#include <sstream>
+#include <functional>
 
 Tensor::Tensor(const vector<vector<vector<float>>> &nested_data) {
     shape = infer_shape(nested_data);
@@ -99,7 +103,7 @@ Tensor Tensor::dot(const Tensor &other) const {
     return Tensor(result_data, result_shape);
 }
 
-string Tensor::to_string() const {
+auto Tensor::to_string() const {
     ostringstream oss;
     oss << "Tensor(shape=[";
     for (size_t i = 0; i < shape.size(); ++i) {

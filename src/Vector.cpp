@@ -444,7 +444,7 @@ double Vector::sum() const{
 }
 
 /**
- * Swaps two elements with the give indexes.
+ * Swaps two elements with the given indexes.
  * @param index1 First index
  * @param index2 Second index
  */

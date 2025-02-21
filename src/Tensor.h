@@ -5,12 +5,7 @@
 #ifndef MATH_TENSOR_H
 #define MATH_TENSOR_H
 
-#include <iostream>
 #include <vector>
-#include <stdexcept>
-#include <numeric>
-#include <sstream>
-#include <functional>
 
 using namespace std;
 
