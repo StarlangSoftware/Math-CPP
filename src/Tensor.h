@@ -25,7 +25,7 @@ public:
     Tensor operator*(const Tensor &other) const;
     Tensor dot(const Tensor &other) const;
 
-    auto to_string() const;
+    string to_string() const;
 
 private:
     vector<float> data;
