@@ -6,45 +6,68 @@
 #define MATH_TENSOR_H
 
 #include <vector>
-
-using namespace std;
+#include <string>
+#include <tuple>
+#include <initializer_list>
 
 class Tensor {
 public:
-    Tensor(const vector<vector<vector<float>>> &nested_data);
-    Tensor(const vector<float> &flat_data, const vector<int> &shape);
+    // Constructors
+    Tensor(const std::vector<float>& flat_data, const std::vector<int>& shape);
+    Tensor(const std::vector<std::vector<std::vector<float>>>& nested_data); // For 3D data
+    Tensor(const std::vector<std::vector<float>>& nested_data);              // For 2D data
+    Tensor(const std::vector<float>& nested_data);                           // For 1D data
 
-    float get(const vector<int> &indices) const;
-    void set(const vector<int> &indices, float value);
+    // Element access
+    float get(const std::vector<int>& indices) const;
+    void set(const std::vector<int>& indices, float value);
 
-    Tensor reshape(const vector<int> &new_shape) const;
-    Tensor transpose(const vector<int> &axes) const;
+    // Shape and strides
+    std::vector<int> shape() const;
+    std::vector<int> strides() const;
 
-    Tensor operator+(const Tensor &other) const;
-    Tensor operator-(const Tensor &other) const;
-    Tensor operator*(const Tensor &other) const;
-    Tensor dot(const Tensor &other) const;
+    // Reshape and transpose
+    Tensor reshape(const std::vector<int>& new_shape) const;
+    Tensor transpose(const std::vector<int>& axes = {}) const;
 
-    string to_string() const;
+    // Broadcasting and elementwise ops
+    Tensor broadcast_to(const std::vector<int>& target_shape) const;
+    Tensor add(const Tensor& other) const;
+    Tensor subtract(const Tensor& other) const;
+    Tensor hadamard_product(const Tensor& other) const;
+
+    // Matrix multiplication
+    Tensor matmul(const Tensor& other) const;
+
+    // Slicing
+    Tensor partial(const std::vector<int>& start_indices, const std::vector<int>& end_indices) const;
+
+    // Representation
+    std::string to_string() const;
 
 private:
-    vector<float> data;
-    vector<int> shape;
-    vector<int> strides;
+    std::vector<float> data_;
+    std::vector<int> shape_;
+    std::vector<int> strides_;
+
+    // Utilities
+    static std::vector<int> infer_shape(const std::vector<float>& data);
+    static std::vector<int> infer_shape(const std::vector<std::vector<float>>& data);
+    static std::vector<int> infer_shape(const std::vector<std::vector<std::vector<float>>>& data);
 
     template <typename T>
-    vector<int> infer_shape(const vector<T> &nested_data);
+    static void flatten_helper(const T& input, std::vector<float>& out);
 
-    template <typename T>
-    vector<float> flatten(const vector<T> &nested_data);
+    static std::vector<int> compute_strides(const std::vector<int>& shape);
+    static int compute_num_elements(const std::vector<int>& shape);
+    void validate_indices(const std::vector<int>& indices) const;
+    static std::vector<int> unflatten_index(int flat_index, const std::vector<int>& shape);
 
-    vector<int> compute_strides(const vector<int> &shape) const;
-    int compute_num_elements(const vector<int> &shape) const;
-    vector<int> unflatten_index(int flat_index, const vector<int> &strides) const;
+    // Broadcasting
+    static std::vector<int> broadcast_shape(const std::vector<int>& shape1, const std::vector<int>& shape2);
 
-    template <typename Op>
-    Tensor elementwise_op(const Tensor &other, Op op) const;
+    // Internal for broadcast_to
+    float get_broadcasted(const std::vector<int>& indices, const std::vector<int>& expanded_shape) const;
 };
-
 
 #endif //MATH_TENSOR_H
