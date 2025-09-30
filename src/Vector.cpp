@@ -471,7 +471,7 @@ void Vector::serialize(ostream &outputFile) {
  * Reads the vector from an input file.
  * @param inputFile Input file.
  */
-Vector::Vector(ifstream &inputFile) {
+Vector::Vector(ifstream& inputFile) {
     inputFile >> size;
     for (int i = 0; i < size; i++){
         double value;

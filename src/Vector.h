@@ -5,6 +5,7 @@
 #ifndef MATH_VECTOR_H
 #define MATH_VECTOR_H
 #include <vector>
+#include <fstream>
 using namespace std;
 
 class Vector {

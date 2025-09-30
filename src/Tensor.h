@@ -5,6 +5,7 @@
 #ifndef MATH_TENSOR_H
 #define MATH_TENSOR_H
 
+#include <string>
 #include <vector>
 
 using namespace std;

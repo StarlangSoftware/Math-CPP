@@ -5,7 +5,11 @@
 #include <fstream>
 #include <random>
 #include <complex>
+#include "string.h"
 #include "Matrix.h"
+
+#include <algorithm>
+
 #include "MatrixDimensionMismatch.h"
 #include "MatrixColumnMismatch.h"
 #include "MatrixRowMismatch.h"

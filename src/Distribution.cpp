@@ -70,7 +70,7 @@ double Distribution::zNormal(double z) {
     if (z == 0.0) {
         x = 0.0;
     } else {
-        y = 0.5 * abs(z);
+        y = 0.5 * fabs(z);
         if (y >= (Z_MAX * 0.5)) {
             x = 1.0;
         } else {
@@ -305,7 +305,7 @@ double Distribution::fDistributionInverse(double p, int freedom1, int freedom2) 
         return 1 + 4.0 / freedom1;
     }
     fval = 1.0 / p;
-    while (abs(maxf - minf) > F_EPSILON) {
+    while (fabs(maxf - minf) > F_EPSILON) {
         if (fDistribution(fval, freedom1, freedom2) < p) {
             maxf = fval;
         } else {
