@@ -3,7 +3,10 @@
 //
 
 #include "catch.hpp"
+#include <vector>
 #include "../src/Tensor.h"
+
+using namespace std;
 
 TEST_CASE("Tensor Initialization from Nested Data") {
     vector<vector<vector<float> > > nested_data = {{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}};
@@ -58,7 +61,7 @@ TEST_CASE("Addition Operator") {
     Tensor tensor1(flat_data1, shape);
     Tensor tensor2(flat_data2, shape);
 
-    Tensor result = tensor1 + tensor2;
+    Tensor result = tensor1.add(tensor2);
 
     REQUIRE(result.get({0, 0}) == 6);
     REQUIRE(result.get({1, 1}) == 12);
@@ -72,7 +75,7 @@ TEST_CASE("Subtraction Operator") {
     Tensor tensor1(flat_data1, shape);
     Tensor tensor2(flat_data2, shape);
 
-    Tensor result = tensor1 - tensor2;
+    Tensor result = tensor1.subtract(tensor2);
 
     REQUIRE(result.get({0, 0}) == 4);
     REQUIRE(result.get({1, 1}) == 4);
@@ -86,7 +89,7 @@ TEST_CASE("Multiplication Operator") {
     Tensor tensor1(flat_data1, shape);
     Tensor tensor2(flat_data2, shape);
 
-    Tensor result = tensor1 * tensor2;
+    Tensor result = tensor1.matmul(tensor2);
 
     REQUIRE(result.get({0, 0}) == 2);
     REQUIRE(result.get({1, 1}) == 20);
@@ -101,7 +104,7 @@ TEST_CASE("Dot Product") {
     Tensor tensor1(flat_data1, shape1);
     Tensor tensor2(flat_data2, shape2);
 
-    Tensor result = tensor1.dot(tensor2);
+    Tensor result = tensor1.hadamard_product(tensor2);
 
     REQUIRE(result.get({0, 0}) == 7);
     REQUIRE(result.get({1, 1}) == 25);
@@ -133,5 +136,5 @@ TEST_CASE("Invalid Dot Product") {
     Tensor tensor1(flat_data1, shape1);
     Tensor tensor2(flat_data2, shape2);
 
-    REQUIRE_THROWS_AS(tensor1.dot(tensor2), invalid_argument);
+    REQUIRE_THROWS_AS(tensor1.hadamard_product(tensor2), invalid_argument);
 }

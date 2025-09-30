@@ -24,13 +24,13 @@ Tensor::Tensor(const std::vector<float>& nested_data)
 
 Tensor::Tensor(const std::vector<std::vector<float>>& nested_data)
         : shape_(infer_shape(nested_data)) {
-    flatten_helper(nested_data, data_);
+    //flatten_helper(nested_data, data_);
     strides_ = compute_strides(shape_);
 }
 
 Tensor::Tensor(const std::vector<std::vector<std::vector<float>>>& nested_data)
         : shape_(infer_shape(nested_data)) {
-    flatten_helper(nested_data, data_);
+    //flatten_helper(nested_data, data_);
     strides_ = compute_strides(shape_);
 }
 
