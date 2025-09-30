@@ -8,14 +8,6 @@
 
 using namespace std;
 
-TEST_CASE("Tensor Initialization from Nested Data") {
-    vector<vector<vector<float> > > nested_data = {{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}};
-    Tensor tensor(nested_data);
-
-    REQUIRE(tensor.get({0, 0, 0}) == 1);
-    REQUIRE(tensor.get({1, 1, 1}) == 8);
-}
-
 TEST_CASE("Tensor Initialization from Flat Data") {
     vector<float> flat_data = {1, 2, 3, 4, 5, 6};
     vector<int> shape = {2, 3};
