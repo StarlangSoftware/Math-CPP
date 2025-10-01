@@ -5,6 +5,8 @@
 #ifndef MATH_DISCRETEDISTRIBUTION_H
 #define MATH_DISCRETEDISTRIBUTION_H
 #include <map>
+#include <string>
+#include <vector>
 using namespace std;
 
 class DiscreteDistribution : public map<string, int>{
