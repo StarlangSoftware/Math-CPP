@@ -13,8 +13,8 @@ TEST_CASE("Tensor Initialization from Flat Data") {
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
-    REQUIRE(tensor.get({0, 0}) == 1);
-    REQUIRE(tensor.get({1, 2}) == 6);
+    REQUIRE(tensor.get_value({0, 0}) == 1);
+    REQUIRE(tensor.get_value({1, 2}) == 6);
 }
 
 TEST_CASE("Get and Set Methods") {
@@ -23,7 +23,7 @@ TEST_CASE("Get and Set Methods") {
     Tensor tensor(flat_data, shape);
 
     tensor.set({0, 1}, 10);
-    REQUIRE(tensor.get({0, 1}) == 10);
+    REQUIRE(tensor.get_value({0, 1}) == 10);
 }
 
 TEST_CASE("Reshape Tensor") {
@@ -32,7 +32,7 @@ TEST_CASE("Reshape Tensor") {
     Tensor tensor(flat_data, shape);
 
     Tensor reshaped = tensor.reshape({4});
-    REQUIRE(reshaped.get({2}) == 3);
+    REQUIRE(reshaped.get_value({2}) == 3);
 }
 
 TEST_CASE("Transpose Tensor") {
@@ -41,8 +41,8 @@ TEST_CASE("Transpose Tensor") {
     Tensor tensor(flat_data, shape);
 
     Tensor transposed = tensor.transpose({1, 0});
-    REQUIRE(transposed.get({0, 1}) == 3);
-    REQUIRE(transposed.get({2, 1}) == 6);
+    REQUIRE(transposed.get_value({0, 1}) == 3);
+    REQUIRE(transposed.get_value({2, 1}) == 6);
 }
 
 TEST_CASE("Addition Operator") {
@@ -55,8 +55,8 @@ TEST_CASE("Addition Operator") {
 
     Tensor result = tensor1.add(tensor2);
 
-    REQUIRE(result.get({0, 0}) == 6);
-    REQUIRE(result.get({1, 1}) == 12);
+    REQUIRE(result.get_value({0, 0}) == 6);
+    REQUIRE(result.get_value({1, 1}) == 12);
 }
 
 TEST_CASE("Subtraction Operator") {
@@ -69,8 +69,8 @@ TEST_CASE("Subtraction Operator") {
 
     Tensor result = tensor1.subtract(tensor2);
 
-    REQUIRE(result.get({0, 0}) == 4);
-    REQUIRE(result.get({1, 1}) == 4);
+    REQUIRE(result.get_value({0, 0}) == 4);
+    REQUIRE(result.get_value({1, 1}) == 4);
 }
 
 TEST_CASE("Multiplication Operator") {
@@ -83,8 +83,8 @@ TEST_CASE("Multiplication Operator") {
 
     Tensor result = tensor1.matmul(tensor2);
 
-    REQUIRE(result.get({0, 0}) == 2);
-    REQUIRE(result.get({1, 1}) == 20);
+    REQUIRE(result.get_value({0, 0}) == 2);
+    REQUIRE(result.get_value({1, 1}) == 20);
 }
 
 TEST_CASE("Dot Product") {
@@ -98,8 +98,8 @@ TEST_CASE("Dot Product") {
 
     Tensor result = tensor1.hadamard_product(tensor2);
 
-    REQUIRE(result.get({0, 0}) == 7);
-    REQUIRE(result.get({1, 1}) == 25);
+    REQUIRE(result.get_value({0, 0}) == 7);
+    REQUIRE(result.get_value({1, 1}) == 25);
 }
 
 TEST_CASE("ToString Method") {

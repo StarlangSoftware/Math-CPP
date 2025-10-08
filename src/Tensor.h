@@ -20,8 +20,11 @@ public:
     Tensor(const std::vector<float>& nested_data);                           // For 1D data
 
     // Element access
-    float get(const std::vector<int>& indices) const;
+    float get_value(const std::vector<int>& indices) const;
     void set(const std::vector<int>& indices, float value);
+
+    Tensor get(const std::vector<int>& indices) const;
+    Tensor concat(Tensor& tensor, int dimension);
 
     // Shape and strides
     std::vector<int> shape() const;

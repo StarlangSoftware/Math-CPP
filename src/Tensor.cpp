@@ -95,7 +95,7 @@ void Tensor::validate_indices(const std::vector<int>& indices) const {
     }
 }
 
-float Tensor::get(const std::vector<int>& indices) const {
+float Tensor::get_value(const std::vector<int>& indices) const {
     validate_indices(indices);
     int flat = 0;
     for (size_t i = 0; i < indices.size(); ++i) flat += indices[i] * strides_[i];
@@ -141,7 +141,7 @@ Tensor Tensor::transpose(const std::vector<int>& axes) const {
         std::vector<int> new_idx = unflatten_index(i, new_shape);
         std::vector<int> orig_idx(shape_.size());
         for (size_t j = 0; j < shape_.size(); ++j) orig_idx[axes_order[j]] = new_idx[j];
-        new_data[i] = get(orig_idx);
+        new_data[i] = get_value(orig_idx);
     }
     return Tensor(new_data, new_shape);
 }
@@ -172,7 +172,7 @@ float Tensor::get_broadcasted(const std::vector<int>& indices, const std::vector
         else
             offset_indices.push_back(indices[dim_offset + i]);
     }
-    return get(offset_indices);
+    return get_value(offset_indices);
 }
 
 Tensor Tensor::broadcast_to(const std::vector<int>& target_shape) const {
@@ -268,7 +268,7 @@ Tensor Tensor::matmul(const Tensor& other) const {
             a_idx.push_back(row); a_idx.push_back(kk);
             std::vector<int> b_idx = batch_indices;
             b_idx.push_back(kk); b_idx.push_back(col);
-            sum += A.get(a_idx) * B.get(b_idx);
+            sum += A.get_value(a_idx) * B.get_value(b_idx);
         }
         result_data[idx] = sum;
     }
@@ -292,7 +292,7 @@ Tensor Tensor::partial(const std::vector<int>& start_indices, const std::vector<
         std::vector<int> orig_idx(shape_.size());
         for (size_t j = 0; j < shape_.size(); ++j)
             orig_idx[j] = start_indices[j] + sub_idx[j];
-        new_data[idx] = get(orig_idx);
+        new_data[idx] = get_value(orig_idx);
     }
     return Tensor(new_data, new_shape);
 }
@@ -313,4 +313,72 @@ std::string Tensor::to_string() const {
     }
     oss << "])";
     return oss.str();
+}
+
+Tensor Tensor::concat(Tensor &tensor, int dimension) {
+    if (dimension >= shape_.size()) {
+        throw std::invalid_argument("Dimension out of bounds.");
+    }
+    if (shape_.size() != tensor.shape_.size()) {
+        throw std::invalid_argument("Dimensions length do not match.");
+    }
+    int startIndex = 1;
+    int endIndex1 = 1;
+    int endIndex2 = 1;
+    for (int i = 0; i < shape_.size(); i++) {
+        if (i != dimension && shape_[i] != tensor.shape_[i]) {
+            throw std::invalid_argument("Dimensions do not match.");
+        }
+        if (i >= dimension) {
+            endIndex1 *= shape_[i];
+            endIndex2 *= tensor.shape_[i];
+        } else {
+            startIndex *= shape_[i];
+        }
+    }
+    std::vector<int> newShape = std::vector<int>();
+    for (int i = 0; i < shape_.size(); i++) {
+        if (i == dimension) {
+            newShape.push_back(shape_[i] + tensor.shape_[i]);
+        } else {
+            newShape.push_back(shape_[i]);
+        }
+    }
+    std::vector<float> newList = std::vector<float>();
+    for (int i = 0; i < startIndex; i++) {
+        for (int j = 0; j < endIndex1; j++) {
+            newList.push_back(data_[i * endIndex1 + j]);
+        }
+        for (int j = 0; j < endIndex2; j++) {
+            newList.push_back(tensor.data_[i * endIndex2 + j]);
+        }
+    }
+    return Tensor(newList, newShape);
+}
+
+Tensor Tensor::get(const std::vector<int> &indices) const {
+    if (indices.size() >= shape_.size()) {
+        throw std::invalid_argument("Dimensions exceeds or same as the tensor's dimension.");
+    }
+    for (int i = 0; i < indices.size(); i++) {
+        if (indices[i] >= shape_[i]) {
+            throw std::invalid_argument("There is a dimension length exceed the tensor's dimension length.");
+        }
+    }
+    std::vector<int> newShape = std::vector<int>();
+    for (int i = indices.size(); i < shape_.size(); i++) {
+        newShape.push_back(shape_[i]);
+    }
+    int i = 0, start = 0, end = data_.size();
+    do {
+        int parts = (end - start) / shape_[i];
+        start += parts * indices[i];
+        end = start + parts;
+        i++;
+    } while (i < indices.size());
+    std::vector<float> newList = std::vector<float>();
+    for (int j = start; j < end; j++) {
+        newList.push_back(data_[j]);
+    }
+    return Tensor(newList,  newShape);
 }
