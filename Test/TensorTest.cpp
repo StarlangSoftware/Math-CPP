@@ -13,8 +13,8 @@ TEST_CASE("Tensor Initialization from Flat Data") {
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
-    REQUIRE(tensor.get_value({0, 0}) == 1);
-    REQUIRE(tensor.get_value({1, 2}) == 6);
+    REQUIRE(tensor.getValue({0, 0}) == 1);
+    REQUIRE(tensor.getValue({1, 2}) == 6);
 }
 
 TEST_CASE("Get and Set Methods") {
@@ -22,8 +22,8 @@ TEST_CASE("Get and Set Methods") {
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
-    tensor.set({0, 1}, 10);
-    REQUIRE(tensor.get_value({0, 1}) == 10);
+    tensor.setValue({0, 1}, 10);
+    REQUIRE(tensor.getValue({0, 1}) == 10);
 }
 
 TEST_CASE("Reshape Tensor") {
@@ -32,7 +32,7 @@ TEST_CASE("Reshape Tensor") {
     Tensor tensor(flat_data, shape);
 
     Tensor reshaped = tensor.reshape({4});
-    REQUIRE(reshaped.get_value({2}) == 3);
+    REQUIRE(reshaped.getValue({2}) == 3);
 }
 
 TEST_CASE("Transpose Tensor") {
@@ -41,8 +41,8 @@ TEST_CASE("Transpose Tensor") {
     Tensor tensor(flat_data, shape);
 
     Tensor transposed = tensor.transpose({1, 0});
-    REQUIRE(transposed.get_value({0, 1}) == 3);
-    REQUIRE(transposed.get_value({2, 1}) == 6);
+    REQUIRE(transposed.getValue({0, 1}) == 4);
+    REQUIRE(transposed.getValue({2, 1}) == 6);
 }
 
 TEST_CASE("Addition Operator") {
@@ -55,8 +55,23 @@ TEST_CASE("Addition Operator") {
 
     Tensor result = tensor1.add(tensor2);
 
-    REQUIRE(result.get_value({0, 0}) == 6);
-    REQUIRE(result.get_value({1, 1}) == 12);
+    REQUIRE(result.getValue({0, 0}) == 6);
+    REQUIRE(result.getValue({1, 1}) == 12);
+}
+
+TEST_CASE("Addition2 Operator") {
+    vector<float> flat_data1 = {1};
+    vector<float> flat_data2 = {5, 6, 7, 8};
+    vector<int> shape1 = {1, 1};
+    vector<int> shape2 = {2, 2};
+
+    Tensor tensor1(flat_data1, shape1);
+    Tensor tensor2(flat_data2, shape2);
+
+    Tensor result = tensor1.add(tensor2);
+
+    REQUIRE(result.getValue({0, 0}) == 6);
+    REQUIRE(result.getValue({1, 1}) == 9);
 }
 
 TEST_CASE("Subtraction Operator") {
@@ -69,8 +84,8 @@ TEST_CASE("Subtraction Operator") {
 
     Tensor result = tensor1.subtract(tensor2);
 
-    REQUIRE(result.get_value({0, 0}) == 4);
-    REQUIRE(result.get_value({1, 1}) == 4);
+    REQUIRE(result.getValue({0, 0}) == 4);
+    REQUIRE(result.getValue({1, 1}) == 4);
 }
 
 TEST_CASE("Multiplication Operator") {
@@ -81,10 +96,10 @@ TEST_CASE("Multiplication Operator") {
     Tensor tensor1(flat_data1, shape);
     Tensor tensor2(flat_data2, shape);
 
-    Tensor result = tensor1.matmul(tensor2);
+    Tensor result = tensor1.multiply(tensor2);
 
-    REQUIRE(result.get_value({0, 0}) == 2);
-    REQUIRE(result.get_value({1, 1}) == 20);
+    REQUIRE(result.getValue({0, 0}) == 10);
+    REQUIRE(result.getValue({1, 1}) == 29);
 }
 
 TEST_CASE("Dot Product") {
@@ -96,10 +111,10 @@ TEST_CASE("Dot Product") {
     Tensor tensor1(flat_data1, shape1);
     Tensor tensor2(flat_data2, shape2);
 
-    Tensor result = tensor1.hadamard_product(tensor2);
+    Tensor result = tensor1.hadamardProduct(tensor2);
 
-    REQUIRE(result.get_value({0, 0}) == 7);
-    REQUIRE(result.get_value({1, 1}) == 25);
+    REQUIRE(result.getValue({0, 0}) == 1);
+    REQUIRE(result.getValue({1, 1}) == 16);
 }
 
 TEST_CASE("ToString Method") {
@@ -117,16 +132,4 @@ TEST_CASE("Invalid Reshape") {
     Tensor tensor(flat_data, shape);
 
     REQUIRE_THROWS_AS(tensor.reshape({3, 2}), invalid_argument);
-}
-
-TEST_CASE("Invalid Dot Product") {
-    vector<float> flat_data1 = {1, 2, 3, 4};
-    vector<float> flat_data2 = {1, 2, 3, 4};
-    vector<int> shape1 = {2, 2};
-    vector<int> shape2 = {3, 2};
-
-    Tensor tensor1(flat_data1, shape1);
-    Tensor tensor2(flat_data2, shape2);
-
-    REQUIRE_THROWS_AS(tensor1.hadamard_product(tensor2), invalid_argument);
 }

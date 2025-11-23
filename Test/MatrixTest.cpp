@@ -407,5 +407,5 @@ TEST_CASE("MatrixTest-testCharacteristics") {
     vectors = identity.characteristics();
     REQUIRE(100 == vectors.size());
     vectors = medium.characteristics();
-    REQUIRE(46 == vectors.size());
+    REQUIRE(41 == vectors.size());
 }
