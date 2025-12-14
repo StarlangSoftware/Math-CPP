@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <random>
-#include <complex>
 #include "string.h"
 #include "Matrix.h"
 
@@ -25,7 +24,7 @@ using namespace std;
  * A constructor of Matrix class which takes a filename as an input and reads numbers into values array
  * and row and column variables.
  *
- * @param filename is used to read file.
+ * @param fileName is used to read file.
  */
 Matrix::Matrix(const string& fileName) {
     double value;
@@ -182,7 +181,7 @@ double Matrix::getValue(int rowNo, int colNo) const{
  * @param colNo integer input for column number.
  * @param value is used to set at given index.
  */
-void Matrix::setValue(int rowNo, int colNo, double value) {
+void Matrix::setValue(int rowNo, int colNo, double value) const {
     values[rowNo][colNo] = value;
 }
 
@@ -193,7 +192,7 @@ void Matrix::setValue(int rowNo, int colNo, double value) {
  * @param colNo integer input for column number.
  * @param value is used to add to given item at given index.
  */
-void Matrix::addValue(int rowNo, int colNo, double value) {
+void Matrix::addValue(int rowNo, int colNo, double value) const {
     values[rowNo][colNo] += value;
 }
 
@@ -203,7 +202,7 @@ void Matrix::addValue(int rowNo, int colNo, double value) {
  * @param rowNo integer input for row number.
  * @param colNo integer input for column number.
  */
-void Matrix::increment(int rowNo, int colNo) {
+void Matrix::increment(int rowNo, int colNo) const {
     values[rowNo][colNo] += 1;
 }
 
@@ -254,7 +253,7 @@ int Matrix::getColumn() const{
 /**
  * The columnWiseNormalize method, first accumulates items column by column then divides items by the summation.
  */
-void Matrix::columnWiseNormalize() {
+void Matrix::columnWiseNormalize() const {
     for (int i = 0; i < row; i++) {
         double sum = 0.0;
         for (int j = 0; j < col; j++) {
@@ -272,7 +271,7 @@ void Matrix::columnWiseNormalize() {
  *
  * @param constant value to multiply items of values array.
  */
-void Matrix::multiplyWithConstant(double constant) {
+void Matrix::multiplyWithConstant(double constant) const {
     int i;
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
@@ -287,7 +286,7 @@ void Matrix::multiplyWithConstant(double constant) {
  *
  * @param constant value to divide items of values array.
  */
-void Matrix::divideByConstant(double constant) {
+void Matrix::divideByConstant(double constant) const {
     int i;
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
@@ -303,7 +302,7 @@ void Matrix::divideByConstant(double constant) {
  *
  * @param m Matrix type input.
  */
-void Matrix::add(const Matrix& m) {
+void Matrix::add(const Matrix& m) const {
     int i;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -323,7 +322,7 @@ void Matrix::add(const Matrix& m) {
  * @param rowNo integer input for row number.
  * @param v     Vector type input.
  */
-void Matrix::add(int rowNo, const Vector& v) {
+void Matrix::add(int rowNo, const Vector& v) const {
     if (col != v.getSize()) {
         throw MatrixColumnMismatch();
     }
@@ -339,7 +338,7 @@ void Matrix::add(int rowNo, const Vector& v) {
  *
  * @param m Matrix type input.
  */
-void Matrix::subtract(const Matrix& m) {
+void Matrix::subtract(const Matrix& m) const {
     int i;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
@@ -364,7 +363,7 @@ Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) const{
     if (row != v.getSize()) {
         throw MatrixRowMismatch();
     }
-    vector<double> result((unsigned long) col);
+    vector<double> result(static_cast<unsigned long>(col));
     for (int i = 0; i < col; i++) {
         result[i] = 0.0;
         for (unsigned long j = 0; j < row; j++) {
@@ -387,7 +386,7 @@ Vector Matrix::multiplyWithVectorFromRight(const Vector& v) const{
     if (col != v.getSize()) {
         throw new MatrixColumnMismatch();
     }
-    vector<double> result((unsigned long) row);
+    vector<double> result(static_cast<unsigned long>(row));
     for (int i = 0; i < row; i++) {
         result[i] = 0;
         for (int j = 0; j < col; j++){
@@ -531,9 +530,9 @@ double Matrix::trace() const{
  *
  * @return Matrix type output.
  */
-Matrix Matrix::transpose() {
+Matrix Matrix::transpose() const {
     int i, j;
-    Matrix result(col, row);
+    Matrix result = Matrix(col, row);
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
             result.values[j][i] = values[i][j];
@@ -553,7 +552,7 @@ Matrix Matrix::transpose() {
  * @param colend   integer input for defining ending index of column.
  * @return result Matrix.
  */
-Matrix Matrix::partial(int rowstart, int rowend, int colstart, int colend) {
+Matrix Matrix::partial(int rowstart, int rowend, int colstart, int colend) const {
     int i, j;
     Matrix result(rowend - rowstart + 1, colend - colstart + 1);
     for (i = rowstart; i <= rowend; i++)
@@ -568,7 +567,7 @@ Matrix Matrix::partial(int rowstart, int rowend, int colstart, int colend) {
  *
  * @return true if items are equal, false otherwise.
  */
-bool Matrix::isSymmetric() {
+bool Matrix::isSymmetric() const {
     if (row != col){
         throw MatrixNotSquare();
     }
@@ -589,7 +588,7 @@ bool Matrix::isSymmetric() {
  *
  * @return determinant of values array.
  */
-double Matrix::determinant() {
+double Matrix::determinant() const {
     if (row != col){
         throw MatrixNotSquare();
     }
@@ -612,7 +611,7 @@ double Matrix::determinant() {
 /**
  * The inverse method finds the inverse of values array.
  */
-void Matrix::inverse() {
+void Matrix::inverse() const {
     if (row != col){
         throw MatrixNotSquare();
     }
@@ -693,7 +692,7 @@ void Matrix::inverse() {
  *
  * @return Matrix type output.
  */
-Matrix Matrix::choleskyDecomposition() {
+Matrix Matrix::choleskyDecomposition() const {
     int i, j, k;
     double sum;
     if (!isSymmetric()) {
@@ -726,7 +725,7 @@ Matrix Matrix::choleskyDecomposition() {
  * @param k   integer input.
  * @param l   integer input.
  */
-void Matrix::rotate(double s, double tau, int i, int j, int k, int l) {
+void Matrix::rotate(double s, double tau, int i, int j, int k, int l) const {
     double g = values[i][j];
     double h = values[k][l];
     values[i][j] = g - s * (h + g * tau);
@@ -741,7 +740,7 @@ bool comparator(const Eigenvector& i, const Eigenvector& j) { return (i.getEigen
  *
  * @return a sorted vector of Eigenvectors.
  */
-vector<Eigenvector> Matrix::characteristics() {
+vector<Eigenvector> Matrix::characteristics() const {
     int j, iq, ip, i;
     double threshold, theta, tau, t, sm, s, h, g, c;
     if (!isSymmetric()) {
@@ -834,7 +833,7 @@ vector<Eigenvector> Matrix::characteristics() {
  * Constructs a clone of the object
  * @return Clone of the matrix object
  */
-Matrix Matrix::clone() {
+Matrix Matrix::clone() const {
     Matrix result = Matrix(row, col);
     for (int i = 0; i < row; i++){
         for (int j = 0; j < col; j++){
@@ -842,6 +841,13 @@ Matrix Matrix::clone() {
         }
     }
     return result;
+}
+
+Matrix::~Matrix() {
+    for (int i = 0; i < row; i++) {
+        delete[] values[i];
+    }
+    delete[] values;
 }
 
 /**

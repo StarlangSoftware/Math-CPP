@@ -59,6 +59,8 @@ TEST_CASE("VectorTest-testSumOfElementsLarge") {
     Vector largeVector2 = Vector(largeData2, 1000);
     REQUIRE(500500 == largeVector1.sumOfElements());
     REQUIRE(500500 == largeVector2.sumOfElements());
+    delete[] largeData1;
+    delete[] largeData2;
 }
 
 TEST_CASE("VectorTest-testMaxIndex") {
@@ -95,6 +97,7 @@ TEST_CASE("VectorTest-testSkipVectorLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     Vector largeVector3 = largeVector1.skipVector(2, 0);
     REQUIRE(250000 == largeVector3.sumOfElements());
     largeVector3 = largeVector1.skipVector(5, 3);
@@ -116,11 +119,13 @@ TEST_CASE("VectorTest-testVectorAddLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     largeVector1.add(largeVector2);
     REQUIRE(1001000 == largeVector1.sumOfElements());
 }
@@ -140,11 +145,13 @@ TEST_CASE("VectorTest-testSubtractLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     largeVector1.subtract(largeVector2);
     REQUIRE(0 == largeVector1.sumOfElements());
 }
@@ -164,11 +171,13 @@ TEST_CASE("VectorTest-testDifferenceLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     Vector largeVector3 = largeVector1.difference(largeVector2);
     REQUIRE(0 == largeVector3.sumOfElements());
 }
@@ -188,11 +197,13 @@ TEST_CASE("VectorTest-testDotProductWithVectorLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     double dotProduct = largeVector1.dotProduct(largeVector2);
     REQUIRE(167167000 == dotProduct);
 }
@@ -210,6 +221,7 @@ TEST_CASE("VectorTest-testDotProductWithItselfLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     double dotProduct = largeVector1.dotProduct();
     REQUIRE(333833500 == dotProduct);
 }
@@ -229,11 +241,13 @@ TEST_CASE("VectorTest-testElementProductLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     Vector largeVector3 = largeVector1.elementProduct(largeVector2);
     REQUIRE(167167000 == largeVector3.sumOfElements());
 }
@@ -274,6 +288,7 @@ TEST_CASE("VectorTest-testL1NormalizeLarge") {
     Vector largeVector1 = Vector(largeData1, 1000);
     largeVector1.l1Normalize();
     REQUIRE(1.0 == largeVector1.sumOfElements());
+    delete[] largeData1;
 }
 
 TEST_CASE("VectorTest-testL2NormSmall") {
@@ -289,6 +304,7 @@ TEST_CASE("VectorTest-testL2NormLarge") {
         largeData1[i - 1] = i;
     }
     Vector largeVector1 = Vector(largeData1, 1000);
+    delete[] largeData1;
     double norm = largeVector1.l2Norm();
     REQUIRE(norm == sqrt(333833500));
 }
@@ -307,12 +323,14 @@ TEST_CASE("VectorTest-cosineSimilarityLarge") {
     for (int i = 1; i <= 1000; i++) {
         largeData1[i - 1] = i;
     }
+    delete[] largeData1;
     Vector largeVector1 = Vector(largeData1, 1000);
     auto *largeData2 = new double[1000];
     for (int i = 1; i <= 1000; i++) {
         largeData2[i - 1] = 1000 - i + 1;
     }
     Vector largeVector2 = Vector(largeData2, 1000);
+    delete[] largeData2;
     double similarity = largeVector1.cosineSimilarity(largeVector2);
     REQUIRE_THAT(0.5007497, Catch::Matchers::WithinAbs(similarity, 0.000001));
 }
