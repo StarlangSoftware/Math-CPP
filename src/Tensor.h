@@ -17,33 +17,33 @@ public:
     explicit Tensor(const std::vector<float>& nested_data);                           // For 1D data
 
     // Element access
-    float getValue(const std::vector<int>& indices) const;
+    [[nodiscard]] float getValue(const std::vector<int>& indices) const;
     void setValue(const std::vector<int>& indices, float value);
 
     // Shape and strides
-    std::vector<int> getShape() const;
+    [[nodiscard]] std::vector<int> getShape() const;
 
     // Reshape and transpose
-    Tensor reshape(const std::vector<int>& newShape) const;
-    Tensor transpose(const std::vector<int>& axes = {}) const;
+    [[nodiscard]] Tensor reshape(const std::vector<int>& newShape) const;
+    [[nodiscard]] Tensor transpose(const std::vector<int>& axes = {}) const;
 
-    Tensor concat(const Tensor& other, int dimension) const;
-    Tensor get(const std::vector<int>& dimensions) const;
+    [[nodiscard]] Tensor concat(const Tensor& other, int dimension) const;
+    [[nodiscard]] Tensor get(const std::vector<int>& dimensions) const;
 
     // Broadcasting and elementwise ops
-    Tensor broadcastTo(const std::vector<int>& targetShape) const;
-    Tensor add(const Tensor& other) const;
-    Tensor subtract(const Tensor& other) const;
-    Tensor hadamardProduct(const Tensor& other) const;
+    [[nodiscard]] Tensor broadcastTo(const std::vector<int>& targetShape) const;
+    [[nodiscard]] Tensor add(const Tensor& other) const;
+    [[nodiscard]] Tensor subtract(const Tensor& other) const;
+    [[nodiscard]] Tensor hadamardProduct(const Tensor& other) const;
 
     // Matrix multiplication
-    Tensor multiply(const Tensor& other) const;
+    [[nodiscard]] Tensor multiply(const Tensor& other) const;
 
     // Slicing
-    Tensor partial(const std::vector<int>& startIndices, const std::vector<int>& endIndices) const;
+    [[nodiscard]] Tensor partial(const std::vector<int>& startIndices, const std::vector<int>& endIndices) const;
 
     // Representation
-    std::string to_string() const;
+    [[nodiscard]] std::string to_string() const;
 
 private:
     std::vector<float> data;
@@ -64,7 +64,7 @@ private:
     static std::vector<int> broadcastShape(const std::vector<int>& shape1, const std::vector<int>& shape2);
 
     // Internal for broadcast_to
-    float getBroadcasted(const std::vector<int>& indices, const std::vector<int>& expanded_shape) const;
+    [[nodiscard]] float getBroadcasted(const std::vector<int>& indices, const std::vector<int>& expanded_shape) const;
 };
 
 #endif //MATH_TENSOR_H

@@ -2,7 +2,6 @@
 // Created by Olcay Taner Yıldız on 26.11.2018.
 //
 
-#include <cmath>
 #include <fstream>
 #include "Vector.h"
 #include "VectorSizeMismatch.h"
@@ -52,7 +51,7 @@ Vector::Vector(unsigned long size, int index, double x) {
  *
  * @param values double array input.
  */
-Vector::Vector(double* values, unsigned long size) {
+Vector::Vector(const double* values, unsigned long size) {
     this->values.reserve(size);
     for (int i = 0; i < size; i++) {
         this->values.push_back(values[i]);
@@ -459,7 +458,7 @@ void Vector::swap(int index1, int index2) {
  * Writes the vector to an output file.
  * @param outputFile Output file.
  */
-void Vector::serialize(ostream &outputFile) {
+void Vector::serialize(ostream &outputFile) const {
     outputFile << values.size() << " ";
     for (double value : values){
         outputFile << value << " ";

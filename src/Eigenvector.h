@@ -11,7 +11,7 @@ private:
     double eigenValue;
 public:
     Eigenvector(double eigenValue, const vector<double>& values);
-    double getEigenValue() const;
+    [[nodiscard]] double getEigenValue() const;
 };
 
 

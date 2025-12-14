@@ -19,16 +19,16 @@ public:
     void removeItem(const string& item);
     void addDistribution(const DiscreteDistribution& distribution);
     void removeDistribution(const DiscreteDistribution& distribution);
-    double getSum() const;
-    int getCount(const string& item) const;
-    int getIndex(const string& item) const;
-    vector<string> getItems() const;
-    string getMaxItem() const;
-    string getMaxItem(const vector<string>& includeTheseOnly) const;
-    double getProbability(const string& item) const;
-    map<string, double> getProbabilityDistribution() const;
-    double getProbabilityLaplaceSmoothing(const string& item) const;
-    double entropy() const;
+    [[nodiscard]] double getSum() const;
+    [[nodiscard]] int getCount(const string& item) const;
+    [[nodiscard]] int getIndex(const string& item) const;
+    [[nodiscard]] vector<string> getItems() const;
+    [[nodiscard]] string getMaxItem() const;
+    [[nodiscard]] string getMaxItem(const vector<string>& includeTheseOnly) const;
+    [[nodiscard]] double getProbability(const string& item) const;
+    [[nodiscard]] map<string, double> getProbabilityDistribution() const;
+    [[nodiscard]] double getProbabilityLaplaceSmoothing(const string& item) const;
+    [[nodiscard]] double entropy() const;
     void serialize(ostream& outputFile);
 };
 
