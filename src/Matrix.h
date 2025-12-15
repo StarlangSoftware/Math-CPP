@@ -15,7 +15,7 @@ class Matrix {
 private:
     int row;
     int col;
-    double** values;
+    vector<double> values;
 public:
     explicit Matrix(const string& filename);
     explicit Matrix(ifstream& inputStream);
@@ -24,23 +24,22 @@ public:
     explicit Matrix(int size);
     Matrix(const Vector& v1, const Vector& v2);
     [[nodiscard]] Matrix clone() const;
-    ~Matrix();
     void printToFile(const string& fileName) const;
     [[nodiscard]] double getValue(int rowNo, int colNo) const;
-    void setValue(int rowNo, int colNo, double value) const;
-    void addValue(int rowNo, int colNo, double value) const;
-    void increment(int rowNo, int colNo) const;
+    void setValue(int rowNo, int colNo, double value);
+    void addValue(int rowNo, int colNo, double value);
+    void increment(int rowNo, int colNo);
     [[nodiscard]] int getRow() const;
     [[nodiscard]] Vector getRow(int row) const;
     [[nodiscard]] vector<double> getColumn(int column) const;
     [[nodiscard]] int getColumn() const;
-    void columnWiseNormalize() const;
-    void multiplyWithConstant(double constant) const;
-    void divideByConstant(double constant) const;
-    void add(const Matrix& m) const;
+    void columnWiseNormalize();
+    void multiplyWithConstant(double constant);
+    void divideByConstant(double constant);
+    void add(const Matrix& m);
     [[nodiscard]] Matrix sum(const Matrix& m) const;
-    void add(int rowNo, const Vector& v) const;
-    void subtract(const Matrix& m) const;
+    void add(int rowNo, const Vector& v);
+    void subtract(const Matrix& m);
     [[nodiscard]] Matrix difference(const Matrix& m) const;
     [[nodiscard]] Vector multiplyWithVectorFromLeft(const Vector& v) const;
     [[nodiscard]] Vector multiplyWithVectorFromRight(const Vector& v) const;
@@ -52,14 +51,14 @@ public:
     [[nodiscard]] double sumOfElements() const;
     [[nodiscard]] double trace() const;
     [[nodiscard]] Matrix transpose() const;
-    [[nodiscard]] Matrix partial(int rowstart, int rowend, int colstart, int colend) const;
+    [[nodiscard]] Matrix partial(int rowStart, int rowEnd, int colStart, int colEnd) const;
     [[nodiscard]] bool isSymmetric() const;
     [[nodiscard]] double determinant() const;
-    void inverse() const;
+    void inverse();
     [[nodiscard]] Matrix choleskyDecomposition() const;
     [[nodiscard]] vector<Eigenvector> characteristics() const;
 private:
-    void rotate(double s, double tau, int i, int j, int k, int l) const;
+    void rotate(double s, double tau, int i, int j, int k, int l);
 };
 
 

@@ -231,12 +231,12 @@ TEST_CASE("MatrixTest-testMultiply") {
     double originalSum = random.sumOfElements();
     Matrix result = small.multiply(small);
     REQUIRE(27 == result.sumOfElements());
-    Matrix result2 = large.multiply(large);
-    REQUIRE(1000000000.0 == result2.sumOfElements());
-    Matrix result3 = random.multiply(identity);
-    REQUIRE(originalSum == result3.sumOfElements());
-    Matrix result4 = identity.multiply(random);
-    REQUIRE(originalSum == result4.sumOfElements());
+    result = large.multiply(large);
+    REQUIRE(1000000000.0 == result.sumOfElements());
+    result = random.multiply(identity);
+    REQUIRE(originalSum == result.sumOfElements());
+    result = identity.multiply(random);
+    REQUIRE(originalSum == result.sumOfElements());
 }
 
 TEST_CASE("MatrixTest-testElementProduct") {
@@ -256,10 +256,10 @@ TEST_CASE("MatrixTest-testElementProduct") {
     Matrix random = Matrix(100, 100, 1, 10, default_random_engine(1));
     Matrix result = small.elementProduct(small);
     REQUIRE(9 == result.sumOfElements());
-    Matrix result2 = large.elementProduct(large);
-    REQUIRE(1000000 == result2.sumOfElements());
-    Matrix result3 = random.elementProduct(identity);
-    REQUIRE(result3.trace() == result3.sumOfElements());
+    result = large.elementProduct(large);
+    REQUIRE(1000000 == result.sumOfElements());
+    result = random.elementProduct(identity);
+    REQUIRE(result.trace() == result.sumOfElements());
 }
 
 TEST_CASE("MatrixTest-testSumOfElements") {

@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <random>
-#include "string.h"
 #include "Matrix.h"
 
 #include <algorithm>
@@ -31,12 +30,11 @@ Matrix::Matrix(const string& fileName) {
     ifstream inputStream(fileName, ios::in);
     inputStream >> row;
     inputStream >> col;
-    values = new double*[row];
+    values = vector(row * col, 0.0);
     for (int i = 0; i < row; i++) {
-        values[i] = new double[col];
         for (int j = 0; j < col; j++) {
             inputStream >> value;
-            values[i][j] = value;
+            values[i * col + j] = value;
         }
     }
     inputStream.close();
@@ -50,12 +48,11 @@ Matrix::Matrix(ifstream &inputStream) {
     double value;
     inputStream >> row;
     inputStream >> col;
-    values = new double*[row];
+    values = vector(row * col, 0.0);
     for (int i = 0; i < row; i++) {
-        values[i] = new double[col];
         for (int j = 0; j < col; j++) {
             inputStream >> value;
-            values[i][j] = value;
+            values[i * col + j] = value;
         }
     }
 }
@@ -68,13 +65,7 @@ Matrix::Matrix(ifstream &inputStream) {
  * @param col is used to create matrix.
  */
 Matrix::Matrix(int row, int col) {
-    values = new double*[row];
-    for (int i = 0; i < row; i++){
-        values[i] = new double[col];
-        for (int j = 0; j < col; j++){
-            values[i][j] = 0;
-        }
-    }
+    values = vector(row * col, 0.0);
     this->row = row;
     this->col = col;
 }
@@ -90,14 +81,13 @@ Matrix::Matrix(int row, int col) {
  * @param max maximum value.
  */
 Matrix::Matrix(int row, int col, double min, double max, default_random_engine randomEngine) {
-    values = new double*[row];
+    values = vector(row * col, 0.0);
     this->row = row;
     this->col = col;
     uniform_real_distribution <> distribution (min, max);
     for (int i = 0; i < row; i++){
-        values[i] = new double[col];
         for (int j = 0; j < col; j++){
-            values[i][j] = distribution(randomEngine);
+            values[i * col + j] = distribution(randomEngine);
         }
     }
 }
@@ -111,15 +101,9 @@ Matrix::Matrix(int row, int col, double min, double max, default_random_engine r
 Matrix::Matrix(int size) {
     row = size;
     col = size;
-    values = new double*[row];
-    for (int i = 0; i < row; i++){
-        values[i] = new double[col];
-        for (int j = 0; j < col; j++){
-            values[i][j] = 0;
-        }
-    }
+    values = vector(row * col, 0.0);
     for (int i = 0; i < row; i++) {
-        values[i][i] = 1;
+        values[i * col + i] = 1;
     }
 }
 
@@ -135,13 +119,10 @@ Matrix::Matrix(int size) {
 Matrix::Matrix(const Vector& v1, const Vector& v2) {
     row = v1.getSize();
     col = v2.getSize();
-    values = new double*[row];
-    for (int i = 0; i < row; i++){
-        values[i] = new double[col];
-    }
+    values = vector(row * col, 0.0);
     for (int i = 0; i < v1.getSize(); i++) {
         for (int j = 0; j < v2.getSize(); j++) {
-            values[i][j] = v1.getValue(i) * v2.getValue(j);
+            values[i * v2.getSize() + j] = v1.getValue(i) * v2.getValue(j);
         }
     }
 }
@@ -154,9 +135,9 @@ Matrix::Matrix(const Vector& v1, const Vector& v2) {
 void Matrix::printToFile(const string& fileName) const{
     ofstream outputStream(fileName, ios::out);
     for (int i = 0; i < row; i++) {
-        outputStream << values[i][0];
+        outputStream << values[i * col + 0];
         for (int j = 1; j < col; j++) {
-            outputStream << values[i][j];
+            outputStream << values[i * col + j];
         }
         outputStream << "\n";
     }
@@ -170,8 +151,8 @@ void Matrix::printToFile(const string& fileName) const{
  * @param colNo integer input for column number.
  * @return item at given index of values array.
  */
-double Matrix::getValue(int rowNo, int colNo) const{
-    return values[rowNo][colNo];
+double Matrix::getValue(const int rowNo, const int colNo) const{
+    return values[rowNo * col + colNo];
 }
 
 /**
@@ -181,8 +162,8 @@ double Matrix::getValue(int rowNo, int colNo) const{
  * @param colNo integer input for column number.
  * @param value is used to set at given index.
  */
-void Matrix::setValue(int rowNo, int colNo, double value) const {
-    values[rowNo][colNo] = value;
+void Matrix::setValue(int rowNo, int colNo, double value) {
+    values[rowNo * col + colNo] = value;
 }
 
 /**
@@ -192,8 +173,8 @@ void Matrix::setValue(int rowNo, int colNo, double value) const {
  * @param colNo integer input for column number.
  * @param value is used to add to given item at given index.
  */
-void Matrix::addValue(int rowNo, int colNo, double value) const {
-    values[rowNo][colNo] += value;
+void Matrix::addValue(const int rowNo, const int colNo, double value) {
+    values[rowNo * col + colNo] += value;
 }
 
 /**
@@ -202,8 +183,8 @@ void Matrix::addValue(int rowNo, int colNo, double value) const {
  * @param rowNo integer input for row number.
  * @param colNo integer input for column number.
  */
-void Matrix::increment(int rowNo, int colNo) const {
-    values[rowNo][colNo] += 1;
+void Matrix::increment(const int rowNo, const int colNo) {
+    values[rowNo * col + colNo] += 1;
 }
 
 /**
@@ -222,7 +203,12 @@ int Matrix::getRow() const{
  * @return Vector of values array at given row input.
  */
 Vector Matrix::getRow(int _row) const{
-    return Vector(values[_row], col);
+    vector<double> vector;
+    vector.reserve(col);
+    for (int i = 0; i < col; i++) {
+        vector.push_back(values[_row * col + i]);
+    }
+    return Vector(vector);
 }
 
 /**
@@ -236,7 +222,7 @@ vector<double> Matrix::getColumn(int column) const{
     vector<double> vector;
     vector.reserve(row);
     for (int i = 0; i < row; i++) {
-        vector.push_back(values[i][column]);
+        vector.push_back(values[i * row + column]);
     }
     return vector;
 }
@@ -253,14 +239,14 @@ int Matrix::getColumn() const{
 /**
  * The columnWiseNormalize method, first accumulates items column by column then divides items by the summation.
  */
-void Matrix::columnWiseNormalize() const {
+void Matrix::columnWiseNormalize() {
     for (int i = 0; i < row; i++) {
         double sum = 0.0;
         for (int j = 0; j < col; j++) {
-            sum += values[i][j];
+            sum += values[i * col + j];
         }
         for (int j = 0; j < col; j++) {
-            values[i][j] /= sum;
+            values[i * col + j] /= sum;
         }
     }
 }
@@ -271,11 +257,11 @@ void Matrix::columnWiseNormalize() const {
  *
  * @param constant value to multiply items of values array.
  */
-void Matrix::multiplyWithConstant(double constant) const {
+void Matrix::multiplyWithConstant(double constant) {
     int i;
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            values[i][j] *= constant;
+            values[i * col + j] *= constant;
         }
     }
 }
@@ -286,11 +272,11 @@ void Matrix::multiplyWithConstant(double constant) const {
  *
  * @param constant value to divide items of values array.
  */
-void Matrix::divideByConstant(double constant) const {
+void Matrix::divideByConstant(double constant) {
     int i;
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            values[i][j] /= constant;
+            values[i * col + j] /= constant;
         }
     }
 }
@@ -302,14 +288,14 @@ void Matrix::divideByConstant(double constant) const {
  *
  * @param m Matrix type input.
  */
-void Matrix::add(const Matrix& m) const {
+void Matrix::add(const Matrix& m) {
     int i;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
     }
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            values[i][j] += m.values[i][j];
+            values[i * col + j] += m.values[i * col + j];
         }
     }
 }
@@ -322,12 +308,12 @@ void Matrix::add(const Matrix& m) const {
  * @param rowNo integer input for row number.
  * @param v     Vector type input.
  */
-void Matrix::add(int rowNo, const Vector& v) const {
+void Matrix::add(int rowNo, const Vector& v) {
     if (col != v.getSize()) {
         throw MatrixColumnMismatch();
     }
     for (int i = 0; i < col; i++){
-        values[rowNo][i] += v.getValue(i);
+        values[rowNo * col + i] += v.getValue(i);
     }
 }
 
@@ -338,14 +324,14 @@ void Matrix::add(int rowNo, const Vector& v) const {
  *
  * @param m Matrix type input.
  */
-void Matrix::subtract(const Matrix& m) const {
+void Matrix::subtract(const Matrix& m) {
     int i;
     if (row != m.row || col != m.col) {
         throw MatrixDimensionMismatch();
     }
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            values[i][j] -= m.values[i][j];
+            values[i * col + j] -= m.values[i * col + j];
         }
     }
 }
@@ -367,7 +353,7 @@ Vector Matrix::multiplyWithVectorFromLeft(const Vector& v) const{
     for (int i = 0; i < col; i++) {
         result[i] = 0.0;
         for (unsigned long j = 0; j < row; j++) {
-            result[i] += v.getValue(j) * values[j][i];
+            result[i] += v.getValue(j) * values[j * col + i];
         }
     }
     return Vector(result);
@@ -390,7 +376,7 @@ Vector Matrix::multiplyWithVectorFromRight(const Vector& v) const{
     for (int i = 0; i < row; i++) {
         result[i] = 0;
         for (int j = 0; j < col; j++){
-            result[i] += values[i][j] * v.getValue(j);
+            result[i] += values[i * col + j] * v.getValue(j);
         }
     }
     return Vector(result);
@@ -406,7 +392,7 @@ Vector Matrix::multiplyWithVectorFromRight(const Vector& v) const{
 double Matrix::columnSum(int columnNo) const{
     double sum = 0;
     for (int i = 0; i < row; i++) {
-        sum += values[i][columnNo];
+        sum += values[i * col + columnNo];
     }
     return sum;
 }
@@ -435,7 +421,7 @@ Vector Matrix::sumOfRows() const{
 double Matrix::rowSum(int rowNo) const{
     double sum = 0;
     for (int i = 0; i < col; i++){
-        sum += values[rowNo][i];
+        sum += values[rowNo * col + i];
     }
     return sum;
 }
@@ -460,9 +446,9 @@ Matrix Matrix::multiply(const Matrix& m) const{
         for (j = 0; j < m.col; j++) {
             sum = 0.0;
             for (k = 0; k < col; k++) {
-                sum += values[i][k] * m.values[k][j];
+                sum += values[i * col + k] * m.values[k * col + j];
             }
-            result.values[i][j] = sum;
+            result.values[i * col + j] = sum;
         }
     }
     return result;
@@ -484,7 +470,7 @@ Matrix Matrix::elementProduct(const Matrix& m) const{
     Matrix result(row, m.col);
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            result.values[i][j] = values[i][j] * m.values[i][j];
+            result.values[i * col + j] = values[i * col + j] * m.values[i * col + j];
         }
     }
     return result;
@@ -501,7 +487,7 @@ double Matrix::sumOfElements() const{
     double sum = 0.0;
     for (i = 0; i < row; i++) {
         for (int j = 0; j < col; j++){
-            sum += values[i][j];
+            sum += values[i * col + j];
         }
     }
     return sum;
@@ -519,7 +505,7 @@ double Matrix::trace() const{
     }
     double sum = 0.0;
     for (i = 0; i < row; i++) {
-        sum += values[i][i];
+        sum += values[i * col + i];
     }
     return sum;
 }
@@ -535,7 +521,7 @@ Matrix Matrix::transpose() const {
     Matrix result = Matrix(col, row);
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
-            result.values[j][i] = values[i][j];
+            result.values[j * row + i] = values[i * col + j];
         }
     }
     return result;
@@ -546,18 +532,18 @@ Matrix Matrix::transpose() const {
  * rowend - rowstart + 1 x colend - colstart + 1. Then, puts corresponding items of values array
  * to the new result Matrix.
  *
- * @param rowstart integer input for defining starting index of row.
- * @param rowend   integer input for defining ending index of row.
- * @param colstart integer input for defining starting index of column.
- * @param colend   integer input for defining ending index of column.
+ * @param rowStart integer input for defining starting index of row.
+ * @param rowEnd   integer input for defining ending index of row.
+ * @param colStart integer input for defining starting index of column.
+ * @param colEnd   integer input for defining ending index of column.
  * @return result Matrix.
  */
-Matrix Matrix::partial(int rowstart, int rowend, int colstart, int colend) const {
+Matrix Matrix::partial(const int rowStart, const int rowEnd, const int colStart, const int colEnd) const {
     int i, j;
-    Matrix result(rowend - rowstart + 1, colend - colstart + 1);
-    for (i = rowstart; i <= rowend; i++)
-        for (j = colstart; j <= colend; j++)
-            result.values[i - rowstart][j - colstart] = values[i][j];
+    Matrix result(rowEnd - rowStart + 1, colEnd - colStart + 1);
+    for (i = rowStart; i <= rowEnd; i++)
+        for (j = colStart; j <= colEnd; j++)
+            result.values[(i - rowStart) * (result.col) + (j - colStart)] = values[i * col + j];
     return result;
 }
 
@@ -573,7 +559,7 @@ bool Matrix::isSymmetric() const {
     }
     for (int i = 0; i < row - 1; i++) {
         for (int j = i + 1; j < row; j++) {
-            if (values[i][j] != values[j][i]) {
+            if (values[i * row + j] != values[j * row + i]) {
                 return false;
             }
         }
@@ -596,13 +582,13 @@ double Matrix::determinant() const {
     double ratio, det = 1.0;
     Matrix copy = clone();
     for (i = 0; i < row; i++) {
-        det *= copy.values[i][i];
+        det *= copy.values[i * col + i];
         if (det == 0.0)
             break;
         for (j = i + 1; j < row; j++) {
-            ratio = copy.values[j][i] / copy.values[i][i];
+            ratio = copy.values[j * col + i] / copy.values[i * col + i];
             for (k = i; k < col; k++)
-                copy.values[j][k] -= copy.values[i][k] * ratio;
+                copy.values[j * col + k] -= copy.values[i * col + k] * ratio;
         }
     }
     return det;
@@ -611,7 +597,7 @@ double Matrix::determinant() const {
 /**
  * The inverse method finds the inverse of values array.
  */
-void Matrix::inverse() const {
+void Matrix::inverse() {
     if (row != col){
         throw MatrixNotSquare();
     }
@@ -633,8 +619,8 @@ void Matrix::inverse() const {
             if (ipiv[j - 1] != 1)
                 for (k = 1; k <= row; k++)
                     if (ipiv[k - 1] == 0)
-                        if (abs(values[j - 1][k - 1]) >= big) {
-                            big = abs(values[j - 1][k - 1]);
+                        if (abs(values[(j - 1) * col + (k - 1)]) >= big) {
+                            big = abs(values[(j - 1) * col + (k - 1)]);
                             irow = j;
                             icol = k;
                         }
@@ -642,41 +628,41 @@ void Matrix::inverse() const {
             throw DeterminantZero();
         ipiv[icol - 1] = ipiv[icol - 1] + 1;
         if (irow != icol) {
-            auto* dummy = new double[col];
-            memcpy(dummy, values[irow - 1], col * sizeof(double));
-            memcpy(values[irow - 1], values[icol - 1], col * sizeof(double));
-            memcpy(values[icol - 1], dummy, col * sizeof(double));
-            memcpy(dummy, b.values[irow - 1], col * sizeof(double));
-            memcpy(b.values[irow - 1], b.values[icol - 1], col * sizeof(double));
-            memcpy(b.values[icol - 1], dummy, col * sizeof(double));
-            delete[] dummy;
+            for (int j = 0; j < col; j++) {
+                double temp = values[(irow - 1) * col + j];
+                values[(irow - 1) * col + j] = values[(icol - 1) * col + j];
+                values[(icol - 1) * col + j] = temp;
+                temp = b.values[(irow - 1) * col + j];
+                b.values[(irow - 1) * col + j] = b.values[(icol - 1) * col + j];
+                b.values[(icol - 1) * col + j] = temp;
+            }
         }
         indxr[i - 1] = irow;
         indxc[i - 1] = icol;
-        if (values[icol - 1][icol - 1] == 0)
+        if (values[(icol - 1) * col + (icol - 1)] == 0)
             throw DeterminantZero();
-        pivinv = (1.0) / (values[icol - 1][icol - 1]);
-        values[icol - 1][icol - 1] = 1.0;
+        pivinv = (1.0) / (values[(icol - 1) * col + (icol - 1)]);
+        values[(icol - 1) * col + (icol - 1)] = 1.0;
         for (int j = 0; j < col; j++){
-            values[icol - 1][j] *= pivinv;
-            b.values[icol - 1][j] *= pivinv;
+            values[(icol - 1) * col + j] *= pivinv;
+            b.values[(icol - 1) * col + j] *= pivinv;
         }
         for (ll = 1; ll <= row; ll++)
             if (ll != icol) {
-                dum = values[ll - 1][icol - 1];
-                values[ll - 1][icol - 1] = 0.0;
+                dum = values[(ll - 1) * col + (icol - 1)];
+                values[(ll - 1) * col + (icol - 1)] = 0.0;
                 for (l = 1; l <= row; l++)
-                    values[ll - 1][l - 1] -= values[icol - 1][l - 1] * dum;
+                    values[(ll - 1) * col + (l - 1)] -= values[(icol - 1) * col + (l - 1)] * dum;
                 for (l = 1; l <= row; l++)
-                    b.values[ll - 1][l - 1] -= b.values[icol - 1][l - 1] * dum;
+                    b.values[(ll - 1) * col + (l - 1)] -= b.values[(icol - 1) * col + (l - 1)] * dum;
             }
     }
     for (l = row; l >= 1; l--){
         if (indxr[l - 1] != indxc[l - 1]){
             for (k = 1; k <= row; k++) {
-                double tmp = values[k - 1][indxr[l - 1] - 1];
-                values[k - 1][indxr[l - 1] - 1] = values[k - 1][indxc[l - 1] - 1];
-                values[k - 1][indxc[l - 1] - 1] = tmp;
+                double tmp = values[(k - 1) * col + (indxr[l - 1] - 1)];
+                values[(k - 1) * col + (indxr[l - 1] - 1)] = values[(k - 1) * col + (indxc[l - 1] - 1)];
+                values[(k - 1) * col + (indxc[l - 1] - 1)] = tmp;
             }
         }
     }
@@ -701,15 +687,15 @@ Matrix Matrix::choleskyDecomposition() const {
     Matrix b(row, col);
     for (i = 0; i < row; i++) {
         for (j = i; j < row; j++) {
-            sum = values[i][j];
+            sum = values[i * col + j];
             for (k = i - 1; k >= 0; k--)
-                sum -= values[i][k] * values[j][k];
+                sum -= values[i * col + k] * values[j * col + k];
             if (i == j) {
                 if (sum <= 0.0)
                     throw MatrixNotPositiveDefinite();
-                b.values[i][i] = sqrt(sum);
+                b.values[i * col + i] = sqrt(sum);
             } else
-                b.values[j][i] = sum / b.values[i][i];
+                b.values[j * col + i] = sum / b.values[i * col + i];
         }
     }
     return b;
@@ -725,11 +711,11 @@ Matrix Matrix::choleskyDecomposition() const {
  * @param k   integer input.
  * @param l   integer input.
  */
-void Matrix::rotate(double s, double tau, int i, int j, int k, int l) const {
-    double g = values[i][j];
-    double h = values[k][l];
-    values[i][j] = g - s * (h + g * tau);
-    values[k][l] = h + s * (g - h * tau);
+void Matrix::rotate(double s, double tau, int i, int j, int k, int l) {
+    double g = values[i * col + j];
+    double h = values[k * col + l];
+    values[i * col + j] = g - s * (h + g * tau);
+    values[k * col + l] = h + s * (g - h * tau);
 }
 
 bool comparator(const Eigenvector& i, const Eigenvector& j) { return (i.getEigenValue() < j.getEigenValue()); }
@@ -753,14 +739,14 @@ vector<Eigenvector> Matrix::characteristics() const {
     auto* z = new double[row];
     double EPS = 0.000000000000000001;
     for (ip = 0; ip < row; ip++) {
-        b[ip] = d[ip] = matrix1.values[ip][ip];
+        b[ip] = d[ip] = matrix1.values[ip * col + ip];
         z[ip] = 0.0;
     }
     for (i = 1; i <= 50; i++) {
         sm = 0.0;
         for (ip = 0; ip < row - 1; ip++)
             for (iq = ip + 1; iq < row; iq++)
-                sm += abs(matrix1.values[ip][iq]);
+                sm += abs(matrix1.values[ip * col + iq]);
         if (sm == 0.0) {
             break;
         }
@@ -770,16 +756,16 @@ vector<Eigenvector> Matrix::characteristics() const {
             threshold = 0.0;
         for (ip = 0; ip < row - 1; ip++) {
             for (iq = ip + 1; iq < row; iq++) {
-                g = 100.0 * abs(matrix1.values[ip][iq]);
+                g = 100.0 * abs(matrix1.values[ip * col + iq]);
                 if (i > 4 && g <= EPS * abs(d[ip]) && g <= EPS * abs(d[iq])) {
-                    matrix1.values[ip][iq] = 0.0;
+                    matrix1.values[ip * col + iq] = 0.0;
                 } else {
-                    if (abs(matrix1.values[ip][iq]) > threshold) {
+                    if (abs(matrix1.values[ip * col + iq]) > threshold) {
                         h = d[iq] - d[ip];
                         if (g <= EPS * abs(h)) {
-                            t = matrix1.values[ip][iq] / h;
+                            t = matrix1.values[ip * col + iq] / h;
                         } else {
-                            theta = 0.5 * h / matrix1.values[ip][iq];
+                            theta = 0.5 * h / matrix1.values[ip * col + iq];
                             t = 1.0 / (abs(theta) + sqrt(1.0 + pow(theta, 2)));
                             if (theta < 0.0) {
                                 t = -t;
@@ -788,12 +774,12 @@ vector<Eigenvector> Matrix::characteristics() const {
                         c = 1.0 / sqrt(1 + pow(t, 2));
                         s = t * c;
                         tau = s / (1.0 + c);
-                        h = t * matrix1.values[ip][iq];
+                        h = t * matrix1.values[ip * col + iq];
                         z[ip] -= h;
                         z[iq] += h;
                         d[ip] -= h;
                         d[iq] += h;
-                        matrix1.values[ip][iq] = 0.0;
+                        matrix1.values[ip * col + iq] = 0.0;
                         for (j = 0; j < ip; j++) {
                             matrix1.rotate(s, tau, j, ip, j, iq);
                         }
@@ -837,17 +823,10 @@ Matrix Matrix::clone() const {
     Matrix result = Matrix(row, col);
     for (int i = 0; i < row; i++){
         for (int j = 0; j < col; j++){
-            result.values[i][j] = values[i][j];
+            result.values[i * col + j] = values[i * col + j];
         }
     }
     return result;
-}
-
-Matrix::~Matrix() {
-    for (int i = 0; i < row; i++) {
-        delete[] values[i];
-    }
-    delete[] values;
 }
 
 /**
@@ -861,7 +840,7 @@ Matrix Matrix::sum(const Matrix &m) const{
     Matrix result = Matrix(row, col);
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
-            result.values[i][j] = values[i][j] + m.values[i][j];
+            result.values[i * col + j] = values[i * col + j] + m.values[i * col + j];
         }
     }
     return result;
@@ -879,7 +858,7 @@ Matrix Matrix::difference(const Matrix &m) const {
     Matrix result = Matrix(row, col);
     for (i = 0; i < row; i++) {
         for (j = 0; j < col; j++) {
-            result.values[i][j] = values[i][j] - m.values[i][j];
+            result.values[i * col + j] = values[i * col + j] - m.values[i * col + j];
         }
     }
     return result;
