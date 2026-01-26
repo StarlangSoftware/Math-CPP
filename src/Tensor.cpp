@@ -41,6 +41,10 @@ Tensor::Tensor(const vector<vector<vector<float>>>& nested_data)
 
 vector<int> Tensor::getShape() const { return shape; }
 
+vector<float> Tensor::getData() const {
+    return data;
+}
+
 /**
  * Computes the strides for each dimension based on the shape.
  *

@@ -25,6 +25,8 @@ public:
     // Shape and strides
     [[nodiscard]] vector<int> getShape() const;
 
+    [[nodiscard]] vector<float> getData() const;
+
     // Reshape and transpose
     [[nodiscard]] Tensor reshape(const vector<int>& newShape) const;
     [[nodiscard]] Tensor transpose(const vector<int>& axes = {}) const;
