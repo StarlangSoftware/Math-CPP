@@ -8,30 +8,32 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class Tensor {
 public:
     // Constructors
-    Tensor(const std::vector<float>& flatData, const std::vector<int>& shape);
-    explicit Tensor(const std::vector<std::vector<std::vector<float>>>& nested_data); // For 3D data
-    explicit Tensor(const std::vector<std::vector<float>>& nested_data);              // For 2D data
-    explicit Tensor(const std::vector<float>& nested_data);                           // For 1D data
+    Tensor(const vector<float>& flatData, const vector<int>& shape);
+    explicit Tensor(const vector<vector<vector<float>>>& nested_data); // For 3D data
+    explicit Tensor(const vector<vector<float>>& nested_data);              // For 2D data
+    explicit Tensor(const vector<float>& nested_data);                           // For 1D data
 
     // Element access
-    [[nodiscard]] float getValue(const std::vector<int>& indices) const;
-    void setValue(const std::vector<int>& indices, float value);
+    [[nodiscard]] float getValue(const vector<int>& indices) const;
+    void setValue(const vector<int>& indices, float value);
 
     // Shape and strides
-    [[nodiscard]] std::vector<int> getShape() const;
+    [[nodiscard]] vector<int> getShape() const;
 
     // Reshape and transpose
-    [[nodiscard]] Tensor reshape(const std::vector<int>& newShape) const;
-    [[nodiscard]] Tensor transpose(const std::vector<int>& axes = {}) const;
+    [[nodiscard]] Tensor reshape(const vector<int>& newShape) const;
+    [[nodiscard]] Tensor transpose(const vector<int>& axes = {}) const;
 
     [[nodiscard]] Tensor concat(const Tensor& other, int dimension) const;
-    [[nodiscard]] Tensor get(const std::vector<int>& dimensions) const;
+    [[nodiscard]] Tensor get(const vector<int>& dimensions) const;
 
     // Broadcasting and elementwise ops
-    [[nodiscard]] Tensor broadcastTo(const std::vector<int>& targetShape) const;
+    [[nodiscard]] Tensor broadcastTo(const vector<int>& targetShape) const;
     [[nodiscard]] Tensor add(const Tensor& other) const;
     [[nodiscard]] Tensor subtract(const Tensor& other) const;
     [[nodiscard]] Tensor hadamardProduct(const Tensor& other) const;
@@ -40,31 +42,31 @@ public:
     [[nodiscard]] Tensor multiply(const Tensor& other) const;
 
     // Slicing
-    [[nodiscard]] Tensor partial(const std::vector<int>& startIndices, const std::vector<int>& endIndices) const;
+    [[nodiscard]] Tensor partial(const vector<int>& startIndices, const vector<int>& endIndices) const;
 
     // Representation
     [[nodiscard]] std::string to_string() const;
 
 private:
-    std::vector<float> data;
-    std::vector<int> shape;
-    std::vector<int> strides;
+    vector<float> data;
+    vector<int> shape;
+    vector<int> strides;
 
     // Utilities
-    static std::vector<int> inferShape(const std::vector<float>& data);
-    static std::vector<int> inferShape(const std::vector<std::vector<float>>& data);
-    static std::vector<int> inferShape(const std::vector<std::vector<std::vector<float>>>& data);
+    static vector<int> inferShape(const vector<float>& data);
+    static vector<int> inferShape(const vector<vector<float>>& data);
+    static vector<int> inferShape(const vector<vector<vector<float>>>& data);
 
-    static std::vector<int> computeStrides(const std::vector<int>& shape);
-    static int computeNumberOfElements(const std::vector<int>& shape);
-    void validateIndices(const std::vector<int>& indices) const;
-    static std::vector<int> unflattenIndex(int flatIndex, const std::vector<int>& shape);
+    static vector<int> computeStrides(const vector<int>& shape);
+    static int computeNumberOfElements(const vector<int>& shape);
+    void validateIndices(const vector<int>& indices) const;
+    static vector<int> unflattenIndex(int flatIndex, const vector<int>& shape);
 
     // Broadcasting
-    static std::vector<int> broadcastShape(const std::vector<int>& shape1, const std::vector<int>& shape2);
+    static vector<int> broadcastShape(const vector<int>& shape1, const vector<int>& shape2);
 
     // Internal for broadcast_to
-    [[nodiscard]] float getBroadcasted(const std::vector<int>& indices, const std::vector<int>& expanded_shape) const;
+    [[nodiscard]] float getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const;
 };
 
 #endif //MATH_TENSOR_H
