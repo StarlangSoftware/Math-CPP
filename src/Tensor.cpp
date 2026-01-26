@@ -15,24 +15,24 @@ using namespace std;
  * @param flatData  Nested lists representing the tensor data.
  * @param shape The shape of the tensor. If null, the shape is inferred from the data.
  */
-Tensor::Tensor(const vector<float>& flatData, const vector<int>& shape)
+Tensor::Tensor(const vector<double>& flatData, const vector<int>& shape)
         : data(flatData), shape(shape), strides(computeStrides(shape)) {
     if (computeNumberOfElements(shape) != static_cast<int>(flatData.size()))
         throw invalid_argument("Shape does not match data size.");
 }
 
-Tensor::Tensor(const vector<float>& nested_data)
+Tensor::Tensor(const vector<double>& nested_data)
         : shape({ static_cast<int>(nested_data.size()) }) {
     data = nested_data;
     strides = computeStrides(shape);
 }
 
-Tensor::Tensor(const vector<vector<float>>& nested_data)
+Tensor::Tensor(const vector<vector<double>>& nested_data)
         : shape(inferShape(nested_data)) {
     strides = computeStrides(shape);
 }
 
-Tensor::Tensor(const vector<vector<vector<float>>>& nested_data)
+Tensor::Tensor(const vector<vector<vector<double>>>& nested_data)
         : shape(inferShape(nested_data)) {
     strides = computeStrides(shape);
 }
@@ -41,7 +41,7 @@ Tensor::Tensor(const vector<vector<vector<float>>>& nested_data)
 
 vector<int> Tensor::getShape() const { return shape; }
 
-vector<float> Tensor::getData() const {
+vector<double> Tensor::getData() const {
     return data;
 }
 
@@ -78,14 +78,14 @@ int Tensor::computeNumberOfElements(const vector<int>& shape) {
  * @param data Nested lists representing the tensor data.
  * @return Array representing the shape.
  */
-vector<int> Tensor::inferShape(const vector<float>& data) {
+vector<int> Tensor::inferShape(const vector<double>& data) {
     return { static_cast<int>(data.size()) };
 }
-vector<int> Tensor::inferShape(const vector<vector<float>>& data) {
+vector<int> Tensor::inferShape(const vector<vector<double>>& data) {
     if (data.empty()) return { 0 };
     return { static_cast<int>(data.size()), static_cast<int>(data[0].size()) };
 }
-vector<int> Tensor::inferShape(const vector<vector<vector<float>>>& data) {
+vector<int> Tensor::inferShape(const vector<vector<vector<double>>>& data) {
     if (data.empty() || data[0].empty()) return { 0, 0, 0 };
     return { static_cast<int>(data.size()), static_cast<int>(data[0].size()), static_cast<int>(data[0][0].size()) };
 }
@@ -109,7 +109,7 @@ void Tensor::validateIndices(const vector<int>& indices) const {
  * @param indices Array of indices specifying the position.
  * @return Value at the specified position.
  */
-float Tensor::getValue(const vector<int>& indices) const {
+double Tensor::getValue(const vector<int>& indices) const {
     validateIndices(indices);
     int flat = 0;
     for (size_t i = 0; i < indices.size(); ++i) {
@@ -124,7 +124,7 @@ float Tensor::getValue(const vector<int>& indices) const {
  * @param indices Array of indices specifying the position.
  * @param value   Value to set at the specified position.
  */
-void Tensor::setValue(const vector<int>& indices, float value) {
+void Tensor::setValue(const vector<int>& indices, double value) {
     validateIndices(indices);
     int flat = 0;
     for (size_t i = 0; i < indices.size(); ++i) flat += indices[i] * strides[i];
@@ -180,7 +180,7 @@ Tensor Tensor::transpose(const vector<int>& axes) const {
         new_shape[i] = shape[axes_order[i]];
     }
     vector<int> new_strides = computeStrides(new_shape);
-    vector<float> new_data(data.size());
+    vector<double> new_data(data.size());
     for (int i = 0; i < computeNumberOfElements(new_shape); ++i) {
         vector<int> new_idx = unflattenIndex(i, new_shape);
         vector<int> orig_idx(shape.size());
@@ -219,7 +219,7 @@ Tensor Tensor::concat(const Tensor &tensor, int dimension) const {
             newShape[i] = this->shape[i];
         }
     }
-    vector<float> newList(startIndex * (endIndex1 + endIndex2));
+    vector<double> newList(startIndex * (endIndex1 + endIndex2));
     int k = 0;
     for (int i = 0; i < startIndex; i++) {
         for (int j = 0; j < endIndex1; j++) {
@@ -247,7 +247,7 @@ Tensor Tensor::get(const vector<int> &dimensions) const {
         end = start + parts;
         i++;
     } while (i < dimensions.size());
-    vector<float> sublist;
+    vector<double> sublist;
     sublist.insert(sublist.begin(), this->data.begin() + start, this->data.begin() + end);
     return Tensor{sublist,  newShape};
 }
@@ -273,7 +273,7 @@ vector<int> Tensor::broadcastShape(const vector<int>& shape1, const vector<int>&
     return out;
 }
 
-float Tensor::getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const {
+double Tensor::getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const {
     vector<int> offset_indices;
     int dim_offset = static_cast<int>(expanded_shape.size() - shape.size());
     for (size_t i = 0; i < shape.size(); ++i) {
@@ -299,7 +299,7 @@ Tensor Tensor::broadcastTo(const vector<int>& targetShape) const {
             throw invalid_argument("Cannot broadcast to target shape.");
     }
     int total = computeNumberOfElements(targetShape);
-    vector<float> new_data;
+    vector<double> new_data;
     for (int idx = 0; idx < total; ++idx) {
         auto idxs = unflattenIndex(idx, targetShape);
         new_data.push_back(getBroadcasted(idxs, targetShape));
@@ -317,7 +317,7 @@ Tensor Tensor::add(const Tensor& other) const {
     auto out_shape = broadcastShape(shape, other.shape);
     auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
     int total = computeNumberOfElements(out_shape);
-    vector<float> result(total);
+    vector<double> result(total);
     for (int i = 0; i < total; ++i)
         result[i] = t1.data[i] + t2.data[i];
     return Tensor{result, out_shape};
@@ -333,7 +333,7 @@ Tensor Tensor::subtract(const Tensor& other) const {
     auto out_shape = broadcastShape(shape, other.shape);
     auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
     int total = computeNumberOfElements(out_shape);
-    vector<float> result(total);
+    vector<double> result(total);
     for (int i = 0; i < total; ++i)
         result[i] = t1.data[i] - t2.data[i];
     return Tensor{result, out_shape};
@@ -349,7 +349,7 @@ Tensor Tensor::hadamardProduct(const Tensor& other) const {
     auto out_shape = broadcastShape(shape, other.shape);
     auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
     int total = computeNumberOfElements(out_shape);
-    vector<float> result(total);
+    vector<double> result(total);
     for (int i = 0; i < total; ++i)
         result[i] = t1.data[i] * t2.data[i];
     return Tensor{result, out_shape};
@@ -387,13 +387,13 @@ Tensor Tensor::multiply(const Tensor& other) const {
     result_shape.push_back(m);
     result_shape.push_back(n);
     int result_total = computeNumberOfElements(result_shape);
-    vector<float> result_data(result_total);
+    vector<double> result_data(result_total);
     for (int idx = 0; idx < result_total; ++idx) {
         vector<int> indices = unflattenIndex(idx, result_shape);
         vector<int> batch_indices(indices.begin(), indices.end() - 2);
         int row = indices[indices.size() - 2];
         int col = indices[indices.size() - 1];
-        float sum = 0.0f;
+        double sum = 0.0f;
         for (int kk = 0; kk < k1; ++kk) {
             vector<int> a_idx = batch_indices;
             a_idx.push_back(row); a_idx.push_back(kk);
@@ -422,7 +422,7 @@ Tensor Tensor::partial(const vector<int>& startIndices, const vector<int>& endIn
         new_shape[i] = endIndices[i] - startIndices[i];
     }
     int total = computeNumberOfElements(new_shape);
-    vector<float> new_data(total);
+    vector<double> new_data(total);
     for (int idx = 0; idx < total; ++idx) {
         vector<int> sub_idx = unflattenIndex(idx, new_shape);
         vector<int> orig_idx(shape.size());

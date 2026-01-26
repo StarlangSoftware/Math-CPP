@@ -9,7 +9,7 @@
 using namespace std;
 
 TEST_CASE("Tensor Initialization from Flat Data") {
-    vector<float> flat_data = {1, 2, 3, 4, 5, 6};
+    vector<double> flat_data = {1, 2, 3, 4, 5, 6};
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
@@ -18,7 +18,7 @@ TEST_CASE("Tensor Initialization from Flat Data") {
 }
 
 TEST_CASE("Get and Set Methods") {
-    vector<float> flat_data = {1, 2, 3, 4, 5, 6};
+    vector<double> flat_data = {1, 2, 3, 4, 5, 6};
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
@@ -27,7 +27,7 @@ TEST_CASE("Get and Set Methods") {
 }
 
 TEST_CASE("Reshape Tensor") {
-    vector<float> flat_data = {1, 2, 3, 4};
+    vector<double> flat_data = {1, 2, 3, 4};
     vector<int> shape = {2, 2};
     Tensor tensor(flat_data, shape);
 
@@ -36,7 +36,7 @@ TEST_CASE("Reshape Tensor") {
 }
 
 TEST_CASE("Transpose Tensor") {
-    vector<float> flat_data = {1, 2, 3, 4, 5, 6};
+    vector<double> flat_data = {1, 2, 3, 4, 5, 6};
     vector<int> shape = {2, 3};
     Tensor tensor(flat_data, shape);
 
@@ -46,8 +46,8 @@ TEST_CASE("Transpose Tensor") {
 }
 
 TEST_CASE("Addition Operator") {
-    vector<float> flat_data1 = {1, 2, 3, 4};
-    vector<float> flat_data2 = {5, 6, 7, 8};
+    vector<double> flat_data1 = {1, 2, 3, 4};
+    vector<double> flat_data2 = {5, 6, 7, 8};
     vector<int> shape = {2, 2};
 
     Tensor tensor1(flat_data1, shape);
@@ -60,8 +60,8 @@ TEST_CASE("Addition Operator") {
 }
 
 TEST_CASE("Addition2 Operator") {
-    vector<float> flat_data1 = {1};
-    vector<float> flat_data2 = {5, 6, 7, 8};
+    vector<double> flat_data1 = {1};
+    vector<double> flat_data2 = {5, 6, 7, 8};
     vector<int> shape1 = {1, 1};
     vector<int> shape2 = {2, 2};
 
@@ -75,8 +75,8 @@ TEST_CASE("Addition2 Operator") {
 }
 
 TEST_CASE("Subtraction Operator") {
-    vector<float> flat_data1 = {5, 6, 7, 8};
-    vector<float> flat_data2 = {1, 2, 3, 4};
+    vector<double> flat_data1 = {5, 6, 7, 8};
+    vector<double> flat_data2 = {1, 2, 3, 4};
     vector<int> shape = {2, 2};
 
     Tensor tensor1(flat_data1, shape);
@@ -89,8 +89,8 @@ TEST_CASE("Subtraction Operator") {
 }
 
 TEST_CASE("Multiplication Operator") {
-    vector<float> flat_data1 = {1, 2, 3, 4};
-    vector<float> flat_data2 = {2, 3, 4, 5};
+    vector<double> flat_data1 = {1, 2, 3, 4};
+    vector<double> flat_data2 = {2, 3, 4, 5};
     vector<int> shape = {2, 2};
 
     Tensor tensor1(flat_data1, shape);
@@ -103,8 +103,8 @@ TEST_CASE("Multiplication Operator") {
 }
 
 TEST_CASE("Dot Product") {
-    vector<float> flat_data1 = {1, 2, 3, 4};
-    vector<float> flat_data2 = {1, 2, 3, 4};
+    vector<double> flat_data1 = {1, 2, 3, 4};
+    vector<double> flat_data2 = {1, 2, 3, 4};
     vector<int> shape1 = {2, 2};
     vector<int> shape2 = {2, 2};
 
@@ -118,7 +118,7 @@ TEST_CASE("Dot Product") {
 }
 
 TEST_CASE("ToString Method") {
-    vector<float> flat_data = {1, 2, 3, 4};
+    vector<double> flat_data = {1, 2, 3, 4};
     vector<int> shape = {2, 2};
     Tensor tensor(flat_data, shape);
 
@@ -127,7 +127,7 @@ TEST_CASE("ToString Method") {
 }
 
 TEST_CASE("Invalid Reshape") {
-    vector<float> flat_data = {1, 2, 3, 4};
+    vector<double> flat_data = {1, 2, 3, 4};
     vector<int> shape = {2, 2};
     Tensor tensor(flat_data, shape);
 

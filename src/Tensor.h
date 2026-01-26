@@ -13,19 +13,19 @@ using namespace std;
 class Tensor {
 public:
     // Constructors
-    Tensor(const vector<float>& flatData, const vector<int>& shape);
-    explicit Tensor(const vector<vector<vector<float>>>& nested_data); // For 3D data
-    explicit Tensor(const vector<vector<float>>& nested_data);              // For 2D data
-    explicit Tensor(const vector<float>& nested_data);                           // For 1D data
+    Tensor(const vector<double>& flatData, const vector<int>& shape);
+    explicit Tensor(const vector<vector<vector<double>>>& nested_data); // For 3D data
+    explicit Tensor(const vector<vector<double>>& nested_data);              // For 2D data
+    explicit Tensor(const vector<double>& nested_data);                           // For 1D data
 
     // Element access
-    [[nodiscard]] float getValue(const vector<int>& indices) const;
-    void setValue(const vector<int>& indices, float value);
+    [[nodiscard]] double getValue(const vector<int>& indices) const;
+    void setValue(const vector<int>& indices, double value);
 
     // Shape and strides
     [[nodiscard]] vector<int> getShape() const;
 
-    [[nodiscard]] vector<float> getData() const;
+    [[nodiscard]] vector<double> getData() const;
 
     // Reshape and transpose
     [[nodiscard]] Tensor reshape(const vector<int>& newShape) const;
@@ -50,14 +50,14 @@ public:
     [[nodiscard]] std::string to_string() const;
 
 private:
-    vector<float> data;
+    vector<double> data;
     vector<int> shape;
     vector<int> strides;
 
     // Utilities
-    static vector<int> inferShape(const vector<float>& data);
-    static vector<int> inferShape(const vector<vector<float>>& data);
-    static vector<int> inferShape(const vector<vector<vector<float>>>& data);
+    static vector<int> inferShape(const vector<double>& data);
+    static vector<int> inferShape(const vector<vector<double>>& data);
+    static vector<int> inferShape(const vector<vector<vector<double>>>& data);
 
     static vector<int> computeStrides(const vector<int>& shape);
     static int computeNumberOfElements(const vector<int>& shape);
@@ -68,7 +68,7 @@ private:
     static vector<int> broadcastShape(const vector<int>& shape1, const vector<int>& shape2);
 
     // Internal for broadcast_to
-    [[nodiscard]] float getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const;
+    [[nodiscard]] double getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const;
 };
 
 #endif //MATH_TENSOR_H
