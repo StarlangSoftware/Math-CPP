@@ -48,7 +48,17 @@ public:
 
     // Representation
     [[nodiscard]] std::string to_string() const;
-
+    bool operator<(const Tensor &tensor) const{
+        for (int i = 0; i < this->data.size() && i < tensor.data.size(); i++) {
+            if (this->data[i] < tensor.data[i]) {
+                return true;
+            }
+            if (this->data[i] > tensor.data[i]) {
+                return false;
+            }
+        }
+        return this->data.size() < tensor.data.size();
+    }
 private:
     vector<double> data;
     vector<int> shape;
@@ -69,17 +79,6 @@ private:
 
     // Internal for broadcast_to
     [[nodiscard]] double getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const;
-    bool operator<(const Tensor &tensor) const{
-        for (int i = 0; i < this->data.size() && i < tensor.data.size(); i++) {
-            if (this->data[i] < tensor.data[i]) {
-                return true;
-            }
-            if (this->data[i] > tensor.data[i]) {
-                return false;
-            }
-        }
-        return this->data.size() < tensor.data.size();
-    }
 };
 
 #endif //MATH_TENSOR_H
