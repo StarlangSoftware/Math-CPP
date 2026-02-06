@@ -3,6 +3,7 @@
 //
 
 #include "Tensor.h"
+#include "math.h"
 #include <stdexcept>
 #include <numeric>
 #include <sstream>

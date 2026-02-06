@@ -2,6 +2,7 @@
 // Created by Olcay Taner Yıldız on 26.11.2018.
 //
 
+#include <math.h>
 #include <fstream>
 #include "Vector.h"
 #include "VectorSizeMismatch.h"
