@@ -3,58 +3,270 @@
 //
 
 #include "Tensor.h"
-#include <stdexcept>
-#include <numeric>
-#include <sstream>
 #include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
 
 using namespace std;
+
 /**
- * Initializes the tensor with given data and shape.
- *
- * @param flatData  Nested lists representing the tensor data.
- * @param shape The shape of the tensor. If null, the shape is inferred from the data.
+ * Initializes an empty tensor.
  */
-Tensor::Tensor(const vector<double>& flatData, const vector<int>& shape)
-        : data(flatData), shape(shape), strides(computeStrides(shape)) {
-    if (computeNumberOfElements(shape) != static_cast<int>(flatData.size()))
-        throw invalid_argument("Shape does not match data size.");
+Tensor::Tensor() {
+    this->data = nullptr;
+    this->shape = nullptr;
+    this->strides = nullptr;
+    this->shapeSize = 0;
+    this->size = 0;
 }
 
-Tensor::Tensor(const vector<double>& nested_data)
-        : shape({ static_cast<int>(nested_data.size()) }) {
-    data = nested_data;
-    strides = computeStrides(shape);
+/**
+ * Sets the data, shape and strides of the tensor. The ownership of the data array is taken, the shape array
+ * is copied.
+ *
+ * @param data Flattened array representing the tensor data.
+ * @param shape The shape of the tensor.
+ * @param shapeSize Number of dimensions of the tensor.
+ */
+void Tensor::initialize(double *data, const int *shape, const int shapeSize) {
+    this->data = data;
+    this->shapeSize = shapeSize;
+    this->shape = copyOf(shape, shapeSize);
+    this->strides = computeStrides(this->shape, shapeSize);
+    this->size = computeNumberOfElements(this->shape, shapeSize);
 }
 
-Tensor::Tensor(const vector<vector<double>>& nested_data)
-        : shape(inferShape(nested_data)) {
-    strides = computeStrides(shape);
+/**
+ * Initializes the tensor with the given data and shape. The tensor takes the ownership of the data array,
+ * therefore the caller must neither delete nor reuse it.
+ *
+ * @param data Flattened array representing the tensor data.
+ * @param shape The shape of the tensor.
+ * @param shapeSize Number of dimensions of the tensor.
+ */
+Tensor::Tensor(double* data, const int* shape, const int shapeSize) {
+    initialize(data, shape, shapeSize);
 }
 
-Tensor::Tensor(const vector<vector<vector<double>>>& nested_data)
-        : shape(inferShape(nested_data)) {
-    strides = computeStrides(shape);
+/**
+ * Initializes the tensor with the given data and shape. The tensor takes the ownership of the data array.
+ *
+ * @param data Flattened array representing the tensor data.
+ * @param shape The shape of the tensor.
+ */
+Tensor::Tensor(double *data, const initializer_list<int> shape) {
+    initialize(data, shape.begin(), static_cast<int>(shape.size()));
 }
 
-// --- Shape ---
+/**
+ * Initializes the tensor by copying the given data and shape.
+ *
+ * @param data Flattened data of the tensor.
+ * @param shape The shape of the tensor.
+ */
+Tensor::Tensor(const initializer_list<double> data, const initializer_list<int> shape) {
+    if (computeNumberOfElements(shape.begin(), static_cast<int>(shape.size())) != static_cast<int>(data.size())) {
+        throw invalid_argument("Shape does not match the number of elements in data.");
+    }
+    auto* newData = new double[data.size()];
+    copy(data.begin(), data.end(), newData);
+    initialize(newData, shape.begin(), static_cast<int>(shape.size()));
+}
 
-vector<int> Tensor::getShape() const { return shape; }
+/**
+ * Initializes a one dimensional tensor by copying the given data.
+ *
+ * @param data Data of the tensor.
+ */
+Tensor::Tensor(const initializer_list<double> data) {
+    auto* newData = new double[data.size()];
+    copy(data.begin(), data.end(), newData);
+    const int newShape[1] = {static_cast<int>(data.size())};
+    initialize(newData, newShape, 1);
+}
 
-vector<double> Tensor::getData() const {
-    return data;
+/**
+ * Initializes a two dimensional tensor by flattening the given nested lists.
+ *
+ * @param data Nested lists representing the tensor data.
+ */
+Tensor::Tensor(const initializer_list<initializer_list<double>> data) {
+    const int rowCount = static_cast<int>(data.size());
+    const int columnCount = rowCount == 0 ? 0 : static_cast<int>(data.begin()->size());
+    auto* newData = new double[rowCount * columnCount];
+    int index = 0;
+    for (const auto& row : data) {
+        if (static_cast<int>(row.size()) != columnCount) {
+            delete[] newData;
+            throw invalid_argument("Shape does not match the number of elements in data.");
+        }
+        for (const double value : row) {
+            newData[index++] = value;
+        }
+    }
+    const int newShape[2] = {rowCount, columnCount};
+    initialize(newData, newShape, 2);
+}
+
+/**
+ * Initializes a three dimensional tensor by flattening the given nested lists.
+ *
+ * @param data Nested lists representing the tensor data.
+ */
+Tensor::Tensor(const initializer_list<initializer_list<initializer_list<double>>> data) {
+    const int firstCount = static_cast<int>(data.size());
+    const int secondCount = firstCount == 0 ? 0 : static_cast<int>(data.begin()->size());
+    const int thirdCount = secondCount == 0 ? 0 : static_cast<int>(data.begin()->begin()->size());
+    auto* newData = new double[firstCount * secondCount * thirdCount];
+    int index = 0;
+    for (const auto& matrix : data) {
+        if (static_cast<int>(matrix.size()) != secondCount) {
+            delete[] newData;
+            throw invalid_argument("Shape does not match the number of elements in data.");
+        }
+        for (const auto& row : matrix) {
+            if (static_cast<int>(row.size()) != thirdCount) {
+                delete[] newData;
+                throw invalid_argument("Shape does not match the number of elements in data.");
+            }
+            for (const double value : row) {
+                newData[index++] = value;
+            }
+        }
+    }
+    const int newShape[3] = {firstCount, secondCount, thirdCount};
+    initialize(newData, newShape, 3);
+}
+
+Tensor::Tensor(const Tensor &tensor) {
+    this->shapeSize = tensor.shapeSize;
+    this->size = tensor.size;
+    if (tensor.data == nullptr) {
+        this->data = nullptr;
+        this->shape = nullptr;
+        this->strides = nullptr;
+    } else {
+        this->data = new double[tensor.size];
+        copy(tensor.data, tensor.data + tensor.size, this->data);
+        this->shape = copyOf(tensor.shape, tensor.shapeSize);
+        this->strides = copyOf(tensor.strides, tensor.shapeSize);
+    }
+}
+
+Tensor::Tensor(Tensor &&tensor) noexcept {
+    this->data = tensor.data;
+    this->shape = tensor.shape;
+    this->strides = tensor.strides;
+    this->shapeSize = tensor.shapeSize;
+    this->size = tensor.size;
+    tensor.data = nullptr;
+    tensor.shape = nullptr;
+    tensor.strides = nullptr;
+    tensor.shapeSize = 0;
+    tensor.size = 0;
+}
+
+Tensor & Tensor::operator=(const Tensor &tensor) {
+    if (this == &tensor) {
+        return *this;
+    }
+    delete[] this->data;
+    delete[] this->shape;
+    delete[] this->strides;
+    this->shapeSize = tensor.shapeSize;
+    this->size = tensor.size;
+    if (tensor.data == nullptr) {
+        this->data = nullptr;
+        this->shape = nullptr;
+        this->strides = nullptr;
+    } else {
+        this->data = new double[tensor.size];
+        copy(tensor.data, tensor.data + tensor.size, this->data);
+        this->shape = copyOf(tensor.shape, tensor.shapeSize);
+        this->strides = copyOf(tensor.strides, tensor.shapeSize);
+    }
+    return *this;
+}
+
+Tensor & Tensor::operator=(Tensor &&tensor) noexcept {
+    if (this == &tensor) {
+        return *this;
+    }
+    delete[] this->data;
+    delete[] this->shape;
+    delete[] this->strides;
+    this->data = tensor.data;
+    this->shape = tensor.shape;
+    this->strides = tensor.strides;
+    this->shapeSize = tensor.shapeSize;
+    this->size = tensor.size;
+    tensor.data = nullptr;
+    tensor.shape = nullptr;
+    tensor.strides = nullptr;
+    tensor.shapeSize = 0;
+    tensor.size = 0;
+    return *this;
+}
+
+Tensor::~Tensor() {
+    delete[] this->data;
+    delete[] this->shape;
+    delete[] this->strides;
+}
+
+// --- Data and shape ---
+
+double * Tensor::getData() const {
+    return this->data;
+}
+
+int * Tensor::getShape() const {
+    return this->shape;
+}
+
+int Tensor::getShapeSize() const {
+    return this->shapeSize;
+}
+
+int Tensor::getSize() const {
+    return this->size;
+}
+
+/**
+ * Copies the given array into a newly allocated array.
+ *
+ * @param array Array to be copied.
+ * @param size Size of the array.
+ * @return The newly allocated copy of the array.
+ */
+int * Tensor::copyOf(const int *array, const int size) {
+    if (array == nullptr) {
+        return nullptr;
+    }
+    auto* newArray = new int[size];
+    copy(array, array + size, newArray);
+    return newArray;
+}
+
+int * Tensor::copyOf(const initializer_list<int> array) {
+    auto* newArray = new int[array.size()];
+    copy(array.begin(), array.end(), newArray);
+    return newArray;
 }
 
 /**
  * Computes the strides for each dimension based on the shape.
  *
  * @param shape Array representing the tensor shape.
+ * @param shapeSize Number of dimensions.
  * @return Array representing the strides.
  */
-vector<int> Tensor::computeStrides(const vector<int>& shape) {
-    vector<int> strides(shape.size());
+int* Tensor::computeStrides(const int* shape, const int shapeSize) {
+    auto* strides = new int[shapeSize];
     int prod = 1;
-    for (int i = static_cast<int>(shape.size()) - 1; i >= 0; --i) {
+    for (int i = shapeSize - 1; i >= 0; --i) {
         strides[i] = prod;
         prod *= shape[i];
     }
@@ -65,55 +277,79 @@ vector<int> Tensor::computeStrides(const vector<int>& shape) {
  * Computes the total number of elements in the tensor based on its shape.
  *
  * @param shape Array representing the tensor shape.
+ * @param shapeSize Number of dimensions.
  * @return Total number of elements.
  */
-int Tensor::computeNumberOfElements(const vector<int>& shape) {
-    if (shape.empty()) return 0;
-    return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
+int Tensor::computeNumberOfElements(const int* shape, const int shapeSize) {
+    int product = 1;
+    for (int i = 0; i < shapeSize; i++) {
+        product *= shape[i];
+    }
+    return product;
 }
 
 /**
- * Infers the shape of the tensor from nested lists.
+ * Returns the string representation of the given shape such as [2, 3].
  *
- * @param data Nested lists representing the tensor data.
- * @return Array representing the shape.
+ * @param shape Array representing the tensor shape.
+ * @param shapeSize Number of dimensions.
+ * @return String representation of the shape.
  */
-vector<int> Tensor::inferShape(const vector<double>& data) {
-    return { static_cast<int>(data.size()) };
-}
-vector<int> Tensor::inferShape(const vector<vector<double>>& data) {
-    if (data.empty()) return { 0 };
-    return { static_cast<int>(data.size()), static_cast<int>(data[0].size()) };
-}
-vector<int> Tensor::inferShape(const vector<vector<vector<double>>>& data) {
-    if (data.empty() || data[0].empty()) return { 0, 0, 0 };
-    return { static_cast<int>(data.size()), static_cast<int>(data[0].size()), static_cast<int>(data[0][0].size()) };
+string Tensor::shapeToString(const int* shape, const int shapeSize) {
+    ostringstream oss;
+    oss << "[";
+    for (int i = 0; i < shapeSize; ++i) {
+        oss << shape[i];
+        if (i + 1 < shapeSize) oss << ", ";
+    }
+    oss << "]";
+    return oss.str();
 }
 
 /**
  * Validates that indices are within the valid range for each dimension.
+ *
  * @param indices Array of indices specifying the position.
+ * @param indicesSize Number of indices.
  */
-void Tensor::validateIndices(const vector<int>& indices) const {
-    if (indices.size() != shape.size())
-        throw out_of_range("Number of indices does not match number of dimensions.");
-    for (size_t i = 0; i < indices.size(); ++i) {
+void Tensor::validateIndices(const int* indices, const int indicesSize) const {
+    if (indicesSize != shapeSize)
+        throw out_of_range("Expected " + std::to_string(shapeSize) + " indices but got " + std::to_string(indicesSize) + ".");
+    for (int i = 0; i < indicesSize; ++i) {
         if (indices[i] < 0 || indices[i] >= shape[i])
-            throw out_of_range("Index out of bounds.");
+            throw out_of_range("Index " + shapeToString(indices, indicesSize) + " is out of bounds for shape " + shapeToString(shape, shapeSize) + ".");
     }
 }
 
 /**
  * Retrieves the value at the given indices.
  *
- * @param indices Array of indices specifying the position.
+ * @param indices Array of indices specifying the position. It must contain one index for each dimension.
  * @return Value at the specified position.
  */
-double Tensor::getValue(const vector<int>& indices) const {
-    validateIndices(indices);
+int Tensor::flatIndex(const int *indices) const {
     int flat = 0;
-    for (size_t i = 0; i < indices.size(); ++i) {
+    for (int i = 0; i < shapeSize; ++i) {
         flat += indices[i] * strides[i];
+    }
+    return flat;
+}
+
+double Tensor::getValue(const int* indices) const {
+    validateIndices(indices, shapeSize);
+    int flat = 0;
+    for (int i = 0; i < shapeSize; ++i) {
+        flat += indices[i] * strides[i];
+    }
+    return data[flat];
+}
+
+double Tensor::getValue(const initializer_list<int> indices) const {
+    validateIndices(indices.begin(), static_cast<int>(indices.size()));
+    int flat = 0;
+    int i = 0;
+    for (const int index : indices) {
+        flat += index * strides[i++];
     }
     return data[flat];
 }
@@ -121,75 +357,116 @@ double Tensor::getValue(const vector<int>& indices) const {
 /**
  * Sets the value at the given indices.
  *
- * @param indices Array of indices specifying the position.
+ * @param indices Array of indices specifying the position. It must contain one index for each dimension.
  * @param value   Value to set at the specified position.
  */
-void Tensor::setValue(const vector<int>& indices, double value) {
-    validateIndices(indices);
+void Tensor::setValue(const int* indices, const double value) {
+    validateIndices(indices, shapeSize);
     int flat = 0;
-    for (size_t i = 0; i < indices.size(); ++i) flat += indices[i] * strides[i];
+    for (int i = 0; i < shapeSize; ++i) {
+        flat += indices[i] * strides[i];
+    }
+    data[flat] = value;
+}
+
+void Tensor::setValue(const initializer_list<int> indices, const double value) {
+    validateIndices(indices.begin(), static_cast<int>(indices.size()));
+    int flat = 0;
+    int i = 0;
+    for (const int index : indices) {
+        flat += index * strides[i++];
+    }
     data[flat] = value;
 }
 
 /**
- * Converts a flat index to multidimensional indices based on strides.
+ * Converts a flat index to multidimensional indices based on the given strides.
  *
  * @param flatIndex The flat index to convert.
- * @param shape   Array representing the strides.
- * @return Array of multi-dimensional indices.
+ * @param strides Array representing the strides.
+ * @param stridesSize Number of dimensions.
+ * @param indices Array in which the multi-dimensional indices are written.
  */
-vector<int> Tensor::unflattenIndex(int flatIndex, const vector<int>& shape) {
-    vector<int> strides = computeStrides(shape);
-    vector<int> indices(shape.size());
-    for (size_t i = 0; i < shape.size(); ++i) {
+void Tensor::unflattenIndex(int flatIndex, const int* strides, const int stridesSize, int* indices) {
+    for (int i = 0; i < stridesSize; ++i) {
         indices[i] = flatIndex / strides[i];
         flatIndex %= strides[i];
     }
-    return indices;
 }
 
 /**
  * Reshapes the tensor to the specified new shape.
  *
  * @param newShape Array representing the new shape.
+ * @param newShapeSize Number of dimensions of the new shape.
  * @return New tensor with the specified shape.
  */
-Tensor Tensor::reshape(const vector<int>& newShape) const {
-    if (computeNumberOfElements(newShape) != computeNumberOfElements(shape))
+Tensor Tensor::reshape(const int* newShape, const int newShapeSize) const {
+    if (computeNumberOfElements(newShape, newShapeSize) != size)
         throw invalid_argument("Total number of elements must remain the same.");
-    return Tensor{data, newShape};
+    auto* newData = new double[size];
+    copy(data, data + size, newData);
+    return {newData, newShape, newShapeSize};
+}
+
+Tensor Tensor::reshape(const initializer_list<int> newShape) const {
+    return reshape(newShape.begin(), static_cast<int>(newShape.size()));
 }
 
 /**
  * Transposes the tensor according to the specified axes.
  *
- * @param axes Array representing the order of axes. If null, reverses the axes.
+ * @param axes Array representing the order of axes. If nullptr, reverses the axes.
  * @return New tensor with transposed axes.
  */
-Tensor Tensor::transpose(const vector<int>& axes) const {
-    vector<int> axes_order = axes;
-    if (axes_order.empty()) {
-        for (int i = static_cast<int>(shape.size()) - 1; i >= 0; --i) {
-            axes_order.push_back(i);
+Tensor Tensor::transpose(const int* axes) const {
+    auto* axesOrder = new int[shapeSize];
+    if (axes == nullptr) {
+        for (int i = 0; i < shapeSize; ++i) {
+            axesOrder[i] = shapeSize - 1 - i;
         }
-    }
-    if (axes_order.size() != shape.size())
-        throw invalid_argument("Invalid axes size for transpose.");
-    vector<int> new_shape(shape.size());
-    for (size_t i = 0; i < axes_order.size(); ++i) {
-        new_shape[i] = shape[axes_order[i]];
-    }
-    vector<int> new_strides = computeStrides(new_shape);
-    vector<double> new_data(data.size());
-    for (int i = 0; i < computeNumberOfElements(new_shape); ++i) {
-        vector<int> new_idx = unflattenIndex(i, new_shape);
-        vector<int> orig_idx(shape.size());
-        for (size_t j = 0; j < shape.size(); ++j) {
-            orig_idx[axes_order[j]] = new_idx[j];
+    } else {
+        copy(axes, axes + shapeSize, axesOrder);
+        auto* sortedAxes = copyOf(axesOrder, shapeSize);
+        sort(sortedAxes, sortedAxes + shapeSize);
+        for (int i = 0; i < shapeSize; ++i) {
+            if (sortedAxes[i] != i) {
+                delete[] sortedAxes;
+                delete[] axesOrder;
+                throw invalid_argument("Invalid transpose axes.");
+            }
         }
-        new_data[i] = getValue(orig_idx);
+        delete[] sortedAxes;
     }
-    return Tensor{new_data, new_shape};
+    auto* newShape = new int[shapeSize];
+    for (int i = 0; i < shapeSize; ++i) {
+        newShape[i] = shape[axesOrder[i]];
+    }
+    int* newStrides = computeStrides(newShape, shapeSize);
+    auto* newData = new double[size];
+    auto* newIndices = new int[shapeSize];
+    auto* originalIndices = new int[shapeSize];
+    for (int i = 0; i < size; ++i) {
+        unflattenIndex(i, newStrides, shapeSize, newIndices);
+        for (int j = 0; j < shapeSize; ++j) {
+            originalIndices[axesOrder[j]] = newIndices[j];
+        }
+        newData[i] = getValue(originalIndices);
+    }
+    delete[] newIndices;
+    delete[] originalIndices;
+    delete[] newStrides;
+    delete[] axesOrder;
+    Tensor result = Tensor(newData, newShape, shapeSize);
+    delete[] newShape;
+    return result;
+}
+
+Tensor Tensor::transpose(const initializer_list<int> axes) const {
+    if (static_cast<int>(axes.size()) != shapeSize) {
+        throw invalid_argument("Invalid transpose axes.");
+    }
+    return transpose(axes.begin());
 }
 
 /**
@@ -199,112 +476,204 @@ Tensor Tensor::transpose(const vector<int>& axes) const {
  * @param dimension to concatenate.
  * @return Concatenated {@link Tensor}.
  */
-Tensor Tensor::concat(const Tensor &tensor, int dimension) const {
+Tensor Tensor::concat(const Tensor &tensor, const int dimension) const {
+    if (dimension >= shapeSize) {
+        throw invalid_argument("Dimension out of bounds.");
+    }
+    if (shapeSize != tensor.shapeSize) {
+        throw invalid_argument("Dimensions length do not match.");
+    }
     int startIndex = 1;
     int endIndex1 = 1;
     int endIndex2 = 1;
-    for (int i = 0; i < this->shape.size(); i++) {
+    for (int i = 0; i < shapeSize; i++) {
+        if (i != dimension && shape[i] != tensor.shape[i]) {
+            throw invalid_argument("Dimensions do not match.");
+        }
         if (i >= dimension) {
-            endIndex1 *= this->shape[i];
+            endIndex1 *= shape[i];
             endIndex2 *= tensor.shape[i];
         } else {
-            startIndex *= this->shape[i];
+            startIndex *= shape[i];
         }
     }
-    vector<int> newShape(this->shape.size());
-    for (int i = 0; i < this->shape.size(); i++) {
+    auto* newShape = new int[shapeSize];
+    for (int i = 0; i < shapeSize; i++) {
         if (i == dimension) {
-            newShape[i] = this->shape[i] + tensor.shape[i];
+            newShape[i] = shape[i] + tensor.shape[i];
         } else {
-            newShape[i] = this->shape[i];
+            newShape[i] = shape[i];
         }
     }
-    vector<double> newList(startIndex * (endIndex1 + endIndex2));
+    auto* newData = new double[startIndex * (endIndex1 + endIndex2)];
     int k = 0;
     for (int i = 0; i < startIndex; i++) {
         for (int j = 0; j < endIndex1; j++) {
-            newList[k++] = this->data[i * endIndex1 + j];
+            newData[k++] = data[i * endIndex1 + j];
         }
         for (int j = 0; j < endIndex2; j++) {
-            newList[k++] = tensor.data[i * endIndex2 + j];
+            newData[k++] = tensor.data[i * endIndex2 + j];
         }
     }
-    return Tensor{newList, newShape};
+    Tensor result = Tensor(newData, newShape, shapeSize);
+    delete[] newShape;
+    return result;
 }
 
 /**
  * Returns the sub-{@link Tensor} taking the given dimensions.
  *
+ * @param dimensions Indices of the dimensions to be taken.
+ * @param dimensionSize Number of the given dimensions.
  * @return a sub-{@link Tensor}.
  */
-Tensor Tensor::get(const vector<int> &dimensions) const {
-    vector<int> newShape(this->shape.size() - dimensions.size());
-    newShape.insert(newShape.begin(), this->shape.begin() + static_cast<int>(dimensions.size()), this->shape.end());
-    int i = 0, start = 0, end = static_cast<int>(data.size());
+Tensor Tensor::get(const int* dimensions, const int dimensionSize) const {
+    if (dimensionSize >= shapeSize) {
+        throw invalid_argument("Dimensions exceeds or same as the tensor's dimension.");
+    }
+    for (int i = 0; i < dimensionSize; i++) {
+        if (dimensions[i] >= shape[i]) {
+            throw out_of_range("There is a dimension length exceed the tensor's dimension length.");
+        }
+    }
+    int i = 0, start = 0, end = size;
     do {
-        int parts = (end - start) / this->shape[i];
+        const int parts = (end - start) / shape[i];
         start += parts * dimensions[i];
         end = start + parts;
         i++;
-    } while (i < dimensions.size());
-    vector<double> sublist;
-    sublist.insert(sublist.begin(), this->data.begin() + start, this->data.begin() + end);
-    return Tensor{sublist,  newShape};
+    } while (i < dimensionSize);
+    auto* newData = new double[end - start];
+    copy(data + start, data + end, newData);
+    return {newData, shape + dimensionSize, shapeSize - dimensionSize};
+}
+
+Tensor Tensor::get(const initializer_list<int> dimensions) const {
+    return get(dimensions.begin(), static_cast<int>(dimensions.size()));
 }
 
 /**
  * Determines the broadcasted shape of two tensors.
  *
  * @param shape1 Array representing the first tensor shape.
+ * @param shapeSize1 Number of dimensions of the first tensor.
  * @param shape2 Array representing the second tensor shape.
- * @return Array representing the broadcasted shape.
+ * @param shapeSize2 Number of dimensions of the second tensor.
+ * @return Array representing the broadcasted shape. Its size is the maximum of the given dimension counts.
  */
-vector<int> Tensor::broadcastShape(const vector<int>& shape1, const vector<int>& shape2) {
-    size_t ndim = max(shape1.size(), shape2.size());
-    vector<int> s1 = shape1, s2 = shape2;
-    s1.insert(s1.begin(), ndim - s1.size(), 1);
-    s2.insert(s2.begin(), ndim - s2.size(), 1);
-    vector<int> out(ndim);
-    for (size_t i = 0; i < ndim; ++i) {
-        if (s1[i] == s2[i] || s2[i] == 1) out[i] = s1[i];
-        else if (s1[i] == 1) out[i] = s2[i];
-        else throw invalid_argument("Shapes are not broadcastable");
+int* Tensor::broadcastShape(const int* shape1, const int shapeSize1, const int* shape2, const int shapeSize2) {
+    const int ndim = max(shapeSize1, shapeSize2);
+    const int offset1 = ndim - shapeSize1;
+    const int offset2 = ndim - shapeSize2;
+    auto* out = new int[ndim];
+    for (int i = 0; i < ndim; ++i) {
+        const int dimension1 = i < offset1 ? 1 : shape1[i - offset1];
+        const int dimension2 = i < offset2 ? 1 : shape2[i - offset2];
+        if (dimension1 == dimension2 || dimension2 == 1) {
+            out[i] = dimension1;
+        } else if (dimension1 == 1) {
+            out[i] = dimension2;
+        } else {
+            delete[] out;
+            throw invalid_argument("Shapes " + shapeToString(shape1, shapeSize1) + " and " + shapeToString(shape2, shapeSize2) + " are not broadcastable");
+        }
     }
     return out;
 }
 
-double Tensor::getBroadcasted(const vector<int>& indices, const vector<int>& expanded_shape) const {
-    vector<int> offset_indices;
-    int dim_offset = static_cast<int>(expanded_shape.size() - shape.size());
-    for (size_t i = 0; i < shape.size(); ++i) {
-        if (shape[i] == 1)
-            offset_indices.push_back(0);
-        else
-            offset_indices.push_back(indices[dim_offset + i]);
+double Tensor::getBroadcasted(const int* indices, const int expandedShapeSize) const {
+    const int dimensionOffset = expandedShapeSize - shapeSize;
+    int flat = 0;
+    for (int i = 0; i < shapeSize; ++i) {
+        if (shape[i] != 1) {
+            flat += indices[dimensionOffset + i] * strides[i];
+        }
     }
-    return getValue(offset_indices);
+    return data[flat];
 }
 
 /**
  * Broadcasts the tensor to the specified target shape.
  *
  * @param targetShape Array representing the target shape.
+ * @param targetShapeSize Number of dimensions of the target shape.
  * @return New tensor with the target shape.
  */
-Tensor Tensor::broadcastTo(const vector<int>& targetShape) const {
-    vector<int> expanded_shape = shape;
-    expanded_shape.insert(expanded_shape.begin(), targetShape.size() - shape.size(), 1);
-    for (size_t i = 0; i < targetShape.size(); ++i) {
-        if (!(expanded_shape[i] == targetShape[i] || expanded_shape[i] == 1))
-            throw invalid_argument("Cannot broadcast to target shape.");
+Tensor Tensor::broadcastTo(const int* targetShape, const int targetShapeSize) const {
+    if (targetShapeSize < shapeSize) {
+        throw invalid_argument("Cannot broadcast shape " + shapeToString(shape, shapeSize) + " to " + shapeToString(targetShape, targetShapeSize));
     }
-    int total = computeNumberOfElements(targetShape);
-    vector<double> new_data;
+    const int dimensionOffset = targetShapeSize - shapeSize;
+    for (int i = 0; i < targetShapeSize; ++i) {
+        const int expandedDimension = i < dimensionOffset ? 1 : shape[i - dimensionOffset];
+        if (expandedDimension != targetShape[i] && expandedDimension != 1) {
+            throw invalid_argument("Cannot broadcast shape " + shapeToString(shape, shapeSize) + " to " + shapeToString(targetShape, targetShapeSize));
+        }
+    }
+    const int total = computeNumberOfElements(targetShape, targetShapeSize);
+    int* targetStrides = computeStrides(targetShape, targetShapeSize);
+    auto* newData = new double[total];
+    auto* indices = new int[targetShapeSize];
     for (int idx = 0; idx < total; ++idx) {
-        auto idxs = unflattenIndex(idx, targetShape);
-        new_data.push_back(getBroadcasted(idxs, targetShape));
+        unflattenIndex(idx, targetStrides, targetShapeSize, indices);
+        newData[idx] = getBroadcasted(indices, targetShapeSize);
     }
-    return Tensor{new_data, targetShape};
+    delete[] indices;
+    delete[] targetStrides;
+    return {newData, targetShape, targetShapeSize};
+}
+
+Tensor Tensor::broadcastTo(const initializer_list<int> targetShape) const {
+    return broadcastTo(targetShape.begin(), static_cast<int>(targetShape.size()));
+}
+
+/**
+ * Checks whether the two shapes are identical.
+ *
+ * @param shape1 Array representing the first shape.
+ * @param shapeSize1 Number of dimensions of the first shape.
+ * @param shape2 Array representing the second shape.
+ * @param shapeSize2 Number of dimensions of the second shape.
+ * @return True if the shapes are identical, false otherwise.
+ */
+bool Tensor::equalShapes(const int *shape1, const int shapeSize1, const int *shape2, const int shapeSize2) {
+    if (shapeSize1 != shapeSize2) {
+        return false;
+    }
+    for (int i = 0; i < shapeSize1; i++) {
+        if (shape1[i] != shape2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Applies the given element-wise operation to the two tensors, broadcasting them only if their shapes differ.
+ *
+ * @param other The other tensor.
+ * @param operation Element-wise operation to be applied.
+ * @return New tensor with the result of the operation.
+ */
+Tensor Tensor::elementWise(const Tensor &other, double (*operation)(double, double)) const {
+    if (equalShapes(shape, shapeSize, other.shape, other.shapeSize)) {
+        auto* result = new double[size];
+        for (int i = 0; i < size; ++i) {
+            result[i] = operation(data[i], other.data[i]);
+        }
+        return {result, shape, shapeSize};
+    }
+    const int outShapeSize = max(shapeSize, other.shapeSize);
+    int* outShape = broadcastShape(shape, shapeSize, other.shape, other.shapeSize);
+    const Tensor first = broadcastTo(outShape, outShapeSize);
+    const Tensor second = other.broadcastTo(outShape, outShapeSize);
+    auto* result = new double[first.size];
+    for (int i = 0; i < first.size; ++i) {
+        result[i] = operation(first.data[i], second.data[i]);
+    }
+    Tensor resultTensor = Tensor(result, outShape, outShapeSize);
+    delete[] outShape;
+    return resultTensor;
 }
 
 /**
@@ -314,13 +683,7 @@ Tensor Tensor::broadcastTo(const vector<int>& targetShape) const {
  * @return New tensor with the result of the addition.
  */
 Tensor Tensor::add(const Tensor& other) const {
-    auto out_shape = broadcastShape(shape, other.shape);
-    auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
-    int total = computeNumberOfElements(out_shape);
-    vector<double> result(total);
-    for (int i = 0; i < total; ++i)
-        result[i] = t1.data[i] + t2.data[i];
-    return Tensor{result, out_shape};
+    return elementWise(other, [](const double first, const double second) { return first + second; });
 }
 
 /**
@@ -330,13 +693,7 @@ Tensor Tensor::add(const Tensor& other) const {
  * @return New tensor with the result of the subtraction.
  */
 Tensor Tensor::subtract(const Tensor& other) const {
-    auto out_shape = broadcastShape(shape, other.shape);
-    auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
-    int total = computeNumberOfElements(out_shape);
-    vector<double> result(total);
-    for (int i = 0; i < total; ++i)
-        result[i] = t1.data[i] - t2.data[i];
-    return Tensor{result, out_shape};
+    return elementWise(other, [](const double first, const double second) { return first - second; });
 }
 
 /**
@@ -346,13 +703,7 @@ Tensor Tensor::subtract(const Tensor& other) const {
  * @return New tensor with the result of the multiplication.
  */
 Tensor Tensor::hadamardProduct(const Tensor& other) const {
-    auto out_shape = broadcastShape(shape, other.shape);
-    auto t1 = broadcastTo(out_shape), t2 = other.broadcastTo(out_shape);
-    int total = computeNumberOfElements(out_shape);
-    vector<double> result(total);
-    for (int i = 0; i < total; ++i)
-        result[i] = t1.data[i] * t2.data[i];
-    return Tensor{result, out_shape};
+    return elementWise(other, [](const double first, const double second) { return first * second; });
 }
 
 /**
@@ -363,47 +714,75 @@ Tensor Tensor::hadamardProduct(const Tensor& other) const {
  * @return Tensor resulting from matrix multiplication.
  */
 Tensor Tensor::multiply(const Tensor& other) const {
-    // Both must be at least 2D (batch, m, k) and (batch, k, n)
-    if (shape.size() < 2 || other.shape.size() < 2)
-        throw invalid_argument("matmul only supports tensors with at least 2 dimensions.");
-    int m = shape[shape.size() - 2];
-    int k1 = shape[shape.size() - 1];
-    int k2 = other.shape[other.shape.size() - 2];
-    int n = other.shape[other.shape.size() - 1];
-    if (k1 != k2)
-        throw invalid_argument("matmul: inner dimensions do not match.");
-    vector<int> batch_shape1(shape.begin(), shape.end() - 2);
-    vector<int> batch_shape2(other.shape.begin(), other.shape.end() - 2);
-    vector<int> batch_shape = broadcastShape(batch_shape1, batch_shape2);
-    vector<int> shapeA = batch_shape;
-    shapeA.push_back(m);
-    shapeA.push_back(k1);
-    vector<int> shapeB = batch_shape;
-    shapeB.push_back(k2);
-    shapeB.push_back(n);
-    Tensor A = broadcastTo(shapeA);
-    Tensor B = other.broadcastTo(shapeB);
-    vector<int> result_shape = batch_shape;
-    result_shape.push_back(m);
-    result_shape.push_back(n);
-    int result_total = computeNumberOfElements(result_shape);
-    vector<double> result_data(result_total);
-    for (int idx = 0; idx < result_total; ++idx) {
-        vector<int> indices = unflattenIndex(idx, result_shape);
-        vector<int> batch_indices(indices.begin(), indices.end() - 2);
-        int row = indices[indices.size() - 2];
-        int col = indices[indices.size() - 1];
-        double sum = 0.0f;
-        for (int kk = 0; kk < k1; ++kk) {
-            vector<int> a_idx = batch_indices;
-            a_idx.push_back(row); a_idx.push_back(kk);
-            vector<int> b_idx = batch_indices;
-            b_idx.push_back(kk); b_idx.push_back(col);
-            sum += A.getValue(a_idx) * B.getValue(b_idx);
-        }
-        result_data[idx] = sum;
+    if (shapeSize < 2 || other.shapeSize < 2) {
+        throw invalid_argument("Shapes " + shapeToString(shape, shapeSize) + " and " + shapeToString(other.shape, other.shapeSize) + " are not aligned for multiplication.");
     }
-    return Tensor{result_data, result_shape};
+    if (shape[shapeSize - 1] != other.shape[other.shapeSize - 2]) {
+        throw invalid_argument("Shapes " + shapeToString(shape, shapeSize) + " and " + shapeToString(other.shape, other.shapeSize) + " are not aligned for multiplication.");
+    }
+    const int m = shape[shapeSize - 2];
+    const int k = shape[shapeSize - 1];
+    const int n = other.shape[other.shapeSize - 1];
+    const int batchSize1 = shapeSize - 2;
+    const int batchSize2 = other.shapeSize - 2;
+    const bool sameBatch = equalShapes(shape, batchSize1, other.shape, batchSize2);
+    int batchSize;
+    int* batchShape;
+    Tensor leftBroadcasted;
+    Tensor rightBroadcasted;
+    const Tensor* left;
+    const Tensor* right;
+    if (sameBatch) {
+        batchSize = batchSize1;
+        batchShape = copyOf(shape, batchSize);
+        left = this;
+        right = &other;
+    } else {
+        batchSize = max(batchSize1, batchSize2);
+        batchShape = broadcastShape(shape, batchSize1, other.shape, batchSize2);
+        auto* leftShape = new int[batchSize + 2];
+        auto* rightShape = new int[batchSize + 2];
+        copy(batchShape, batchShape + batchSize, leftShape);
+        copy(batchShape, batchShape + batchSize, rightShape);
+        leftShape[batchSize] = m;
+        leftShape[batchSize + 1] = k;
+        rightShape[batchSize] = k;
+        rightShape[batchSize + 1] = n;
+        leftBroadcasted = broadcastTo(leftShape, batchSize + 2);
+        rightBroadcasted = other.broadcastTo(rightShape, batchSize + 2);
+        left = &leftBroadcasted;
+        right = &rightBroadcasted;
+        delete[] leftShape;
+        delete[] rightShape;
+    }
+    const int resultShapeSize = batchSize + 2;
+    auto* resultShape = new int[resultShapeSize];
+    copy(batchShape, batchShape + batchSize, resultShape);
+    resultShape[batchSize] = m;
+    resultShape[batchSize + 1] = n;
+    delete[] batchShape;
+    const int resultTotal = computeNumberOfElements(resultShape, resultShapeSize);
+    auto* resultData = new double[resultTotal];
+    const double* leftData = left->data;
+    const double* rightData = right->data;
+    const int batchCount = m * n == 0 ? 0 : resultTotal / (m * n);
+    for (int batch = 0; batch < batchCount; batch++) {
+        const int leftOffset = batch * m * k;
+        const int rightOffset = batch * k * n;
+        const int resultOffset = batch * m * n;
+        for (int row = 0; row < m; row++) {
+            for (int col = 0; col < n; col++) {
+                double sum = 0.0;
+                for (int index = 0; index < k; index++) {
+                    sum += leftData[leftOffset + row * k + index] * rightData[rightOffset + index * n + col];
+                }
+                resultData[resultOffset + row * n + col] = sum;
+            }
+        }
+    }
+    Tensor result = Tensor(resultData, resultShape, resultShapeSize);
+    delete[] resultShape;
+    return result;
 }
 
 /**
@@ -413,25 +792,106 @@ Tensor Tensor::multiply(const Tensor& other) const {
  * @param endIndices   Array specifying the end indices (exclusive) for each dimension.
  * @return A new Tensor containing the extracted sub-tensor.
  */
-Tensor Tensor::partial(const vector<int>& startIndices, const vector<int>& endIndices) const {
-    if (startIndices.size() != shape.size() || endIndices.size() != shape.size())
-        throw invalid_argument("partial: indices must match number of dimensions.");
-    vector<int> new_shape(shape.size());
-    for (size_t i = 0; i < shape.size(); ++i) {
-        if (endIndices[i] < startIndices[i]) throw invalid_argument("partial: end < start");
-        new_shape[i] = endIndices[i] - startIndices[i];
-    }
-    int total = computeNumberOfElements(new_shape);
-    vector<double> new_data(total);
-    for (int idx = 0; idx < total; ++idx) {
-        vector<int> sub_idx = unflattenIndex(idx, new_shape);
-        vector<int> orig_idx(shape.size());
-        for (size_t j = 0; j < shape.size(); ++j) {
-            orig_idx[j] = startIndices[j] + sub_idx[j];
+Tensor Tensor::partial(const int* startIndices, const int* endIndices) const {
+    auto* newShape = new int[shapeSize];
+    for (int i = 0; i < shapeSize; ++i) {
+        newShape[i] = endIndices[i] - startIndices[i];
+        if (newShape[i] < 0) {
+            delete[] newShape;
+            throw invalid_argument("End index must be greater than or equal to start index for dimension " + std::to_string(i));
         }
-        new_data[idx] = getValue(orig_idx);
     }
-    return Tensor{new_data, new_shape};
+    for (int i = 0; i < shapeSize; ++i) {
+        if (startIndices[i] < 0 || endIndices[i] > shape[i]) {
+            const int invalidIndices[1] = {endIndices[i] > shape[i] ? endIndices[i] - 1 : startIndices[i]};
+            delete[] newShape;
+            throw out_of_range("Index " + shapeToString(invalidIndices, 1) + " is out of bounds for shape " + shapeToString(shape, shapeSize) + ".");
+        }
+    }
+    const int total = computeNumberOfElements(newShape, shapeSize);
+    int* newStrides = computeStrides(newShape, shapeSize);
+    auto* newData = new double[total];
+    auto* subIndices = new int[shapeSize];
+    auto* originalIndices = new int[shapeSize];
+    for (int idx = 0; idx < total; ++idx) {
+        unflattenIndex(idx, newStrides, shapeSize, subIndices);
+        for (int j = 0; j < shapeSize; ++j) {
+            originalIndices[j] = startIndices[j] + subIndices[j];
+        }
+        newData[idx] = data[flatIndex(originalIndices)];
+    }
+    delete[] subIndices;
+    delete[] originalIndices;
+    delete[] newStrides;
+    Tensor result = Tensor(newData, newShape, shapeSize);
+    delete[] newShape;
+    return result;
+}
+
+Tensor Tensor::partial(const initializer_list<int> startIndices, const initializer_list<int> endIndices) const {
+    if (static_cast<int>(startIndices.size()) != shapeSize || static_cast<int>(endIndices.size()) != shapeSize) {
+        throw invalid_argument("startIndices and endIndices must match the number of dimensions.");
+    }
+    return partial(startIndices.begin(), endIndices.begin());
+}
+
+/**
+ * Returns the string representation of a double value in the same format with Java.
+ *
+ * @param value Value to be converted.
+ * @return String representation of the value.
+ */
+string Tensor::doubleToString(const double value) {
+    if (isnan(value)) {
+        return "NaN";
+    }
+    if (isinf(value)) {
+        return value > 0 ? "Infinity" : "-Infinity";
+    }
+    string result;
+    for (int precision = 1; precision <= 17; precision++) {
+        ostringstream oss;
+        oss << setprecision(precision) << value;
+        result = oss.str();
+        if (stod(result) == value) {
+            break;
+        }
+    }
+    if (result.find('.') == string::npos && result.find('e') == string::npos && result.find('E') == string::npos) {
+        result += ".0";
+    }
+    return result;
+}
+
+/**
+ * Formats the data of the tensor as nested lists.
+ *
+ * @param dataArray Flattened data of the tensor.
+ * @param shape Shape of the (sub-)tensor to be formatted.
+ * @param shapeSize Number of dimensions of the (sub-)tensor.
+ * @param offset Start index of the (sub-)tensor in the flattened data.
+ * @return String representation of the data.
+ */
+string Tensor::formatTensor(const double* dataArray, const int* shape, const int shapeSize, const int offset) {
+    if (shapeSize == 0) {
+        return "[]";
+    }
+    ostringstream oss;
+    oss << "[";
+    if (shapeSize == 1) {
+        for (int i = 0; i < shape[0]; ++i) {
+            oss << doubleToString(dataArray[offset + i]);
+            if (i + 1 < shape[0]) oss << ", ";
+        }
+    } else {
+        const int stride = computeNumberOfElements(shape + 1, shapeSize - 1);
+        for (int i = 0; i < shape[0]; ++i) {
+            oss << formatTensor(dataArray, shape + 1, shapeSize - 1, offset + (i * stride));
+            if (i + 1 < shape[0]) oss << ", ";
+        }
+    }
+    oss << "]";
+    return oss.str();
 }
 
 /**
@@ -440,17 +900,17 @@ Tensor Tensor::partial(const vector<int>& startIndices, const vector<int>& endIn
  * @return String representing the tensor.
  */
 string Tensor::to_string() const {
-    ostringstream oss;
-    oss << "Tensor(shape=[";
-    for (size_t i = 0; i < shape.size(); ++i) {
-        oss << shape[i];
-        if (i + 1 < shape.size()) oss << ", ";
+    return "Tensor(shape=" + shapeToString(shape, shapeSize) + ", data=" + formatTensor(data, shape, shapeSize, 0) + ")";
+}
+
+bool Tensor::operator<(const Tensor &tensor) const {
+    for (int i = 0; i < size && i < tensor.size; i++) {
+        if (data[i] < tensor.data[i]) {
+            return true;
+        }
+        if (data[i] > tensor.data[i]) {
+            return false;
+        }
     }
-    oss << "], data=[";
-    for (size_t i = 0; i < data.size(); ++i) {
-        oss << data[i];
-        if (i + 1 < data.size()) oss << ", ";
-    }
-    oss << "])";
-    return oss.str();
+    return size < tensor.size;
 }

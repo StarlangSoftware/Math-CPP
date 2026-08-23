@@ -4,6 +4,9 @@
 
 #include <fstream>
 #include "Vector.h"
+
+#include <cmath>
+
 #include "VectorSizeMismatch.h"
 
 /**
